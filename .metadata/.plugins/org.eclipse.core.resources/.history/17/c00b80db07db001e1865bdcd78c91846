@@ -245,8 +245,6 @@ static void MX_GPIO_Init(void)
 void Damian_Marudzi(uint16_t czas)
 {
 	LL_TIM_ClearFlag_UPDATE(TIM1);
-	LL_TIM_SetAutoReload(TIM2, czas);
-	while(LL_TIM_IsActiveFlag_UPDATE(TIM2) == 0);
 }
 
 /* USER CODE END 4 */
