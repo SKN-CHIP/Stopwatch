@@ -50,7 +50,7 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM6_Init(void);
 /* USER CODE BEGIN PFP */
-void Damian_Marudzi(czas);
+void Damian_Marudzi(uint16_t czas);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -105,20 +105,11 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	 LL_GPIO_SetOutputPin(test_GPIO_Port, test_Pin);
+	 Damian_Marudzi(4000);
+	 LL_GPIO_ResetOutputPin(test_GPIO_Port, test_Pin);
+	 Damian_Marudzi(1000);
 
-	 LL_GPIO_TogglePin(Buzzer_GPIO_Port, Buzzer_Pin);
-	 LL_GPIO_TogglePin(test_GPIO_Port, test_Pin);
-	 LL_mDelay(500);
-	 LL_GPIO_TogglePin(Buzzer_GPIO_Port, Buzzer_Pin);
-	 LL_mDelay(500);
-	 LL_GPIO_TogglePin(Buzzer_GPIO_Port, Buzzer_Pin);
-	 LL_mDelay(500);
-	 LL_GPIO_TogglePin(Buzzer_GPIO_Port, Buzzer_Pin);
-	 LL_mDelay(500);
-	 LL_GPIO_TogglePin(Buzzer_GPIO_Port, Buzzer_Pin);
-	 LL_mDelay(2000);
-	 LL_GPIO_TogglePin(Buzzer_GPIO_Port, Buzzer_Pin);
-	 LL_mDelay(500);
 
   }
   /* USER CODE END 3 */
@@ -193,7 +184,7 @@ static void MX_TIM6_Init(void)
   /* USER CODE BEGIN TIM6_Init 1 */
 
   /* USER CODE END TIM6_Init 1 */
-  TIM_InitStruct.Prescaler = 0;
+  TIM_InitStruct.Prescaler = 31;
   TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
   TIM_InitStruct.Autoreload = 65535;
   LL_TIM_Init(TIM6, &TIM_InitStruct);
@@ -201,9 +192,8 @@ static void MX_TIM6_Init(void)
   LL_TIM_SetTriggerOutput(TIM6, LL_TIM_TRGO_RESET);
   LL_TIM_DisableMasterSlaveMode(TIM6);
   /* USER CODE BEGIN TIM6_Init 2 */
-  LL_TIM_SetClockSource(TIM6, LL_TIM_CLOCKSOURCE_INTERNAL);
+ // LL_TIM_SetClockSource(TIM6, LL_TIM_CLOCKSOURCE_INTERNAL);
   LL_TIM_SetCounterMode(TIM6, LL_TIM_COUNTERMODE_UP);
-  LL_TIM_SetPrescaler(TIM6, 31);
   LL_TIM_ClearFlag_UPDATE(TIM6);
   LL_TIM_EnableCounter(TIM6);
 
