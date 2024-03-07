@@ -48,7 +48,7 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_TIM1_Init(void);
+static void MX_TIM6_Init(void);
 /* USER CODE BEGIN PFP */
 void Damian_Marudzi(czas);
 /* USER CODE END PFP */
@@ -93,7 +93,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_TIM1_Init();
+  MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -166,7 +166,7 @@ void SystemClock_Config(void)
   }
   LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
   LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_1);
-  LL_RCC_SetAPB2Prescaler(LL_RCC_APB2_DIV_4);
+  LL_RCC_SetAPB2Prescaler(LL_RCC_APB2_DIV_1);
 
   LL_Init1msTick(32000000);
 
@@ -174,39 +174,40 @@ void SystemClock_Config(void)
 }
 
 /**
-  * @brief TIM1 Initialization Function
+  * @brief TIM6 Initialization Function
   * @param None
   * @retval None
   */
-static void MX_TIM1_Init(void)
+static void MX_TIM6_Init(void)
 {
 
-  /* USER CODE BEGIN TIM1_Init 0 */
+  /* USER CODE BEGIN TIM6_Init 0 */
 
-  /* USER CODE END TIM1_Init 0 */
+  /* USER CODE END TIM6_Init 0 */
 
   LL_TIM_InitTypeDef TIM_InitStruct = {0};
 
   /* Peripheral clock enable */
-  LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_TIM1);
+  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM6);
 
-  /* USER CODE BEGIN TIM1_Init 1 */
+  /* USER CODE BEGIN TIM6_Init 1 */
 
-  /* USER CODE END TIM1_Init 1 */
-  TIM_InitStruct.Prescaler = 31;
+  /* USER CODE END TIM6_Init 1 */
+  TIM_InitStruct.Prescaler = 0;
   TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
   TIM_InitStruct.Autoreload = 65535;
-  TIM_InitStruct.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1;
-  TIM_InitStruct.RepetitionCounter = 0;
-  LL_TIM_Init(TIM1, &TIM_InitStruct);
-  LL_TIM_DisableARRPreload(TIM1);
-  LL_TIM_SetClockSource(TIM1, LL_TIM_CLOCKSOURCE_INTERNAL);
-  LL_TIM_SetTriggerOutput(TIM1, LL_TIM_TRGO_RESET);
-  LL_TIM_SetTriggerOutput2(TIM1, LL_TIM_TRGO2_RESET);
-  LL_TIM_DisableMasterSlaveMode(TIM1);
-  /* USER CODE BEGIN TIM1_Init 2 */
+  LL_TIM_Init(TIM6, &TIM_InitStruct);
+  LL_TIM_DisableARRPreload(TIM6);
+  LL_TIM_SetTriggerOutput(TIM6, LL_TIM_TRGO_RESET);
+  LL_TIM_DisableMasterSlaveMode(TIM6);
+  /* USER CODE BEGIN TIM6_Init 2 */
+  LL_TIM_SetClockSource(TIM6, LL_TIM_CLOCKSOURCE_INTERNAL);
+  LL_TIM_SetCounterMode(TIM6, LL_TIM_COUNTERMODE_UP);
+  LL_TIM_SetPrescaler(TIM6, 31);
+  LL_TIM_ClearFlag_UPDATE(TIM6);
+  LL_TIM_EnableCounter(TIM6);
 
-  /* USER CODE END TIM1_Init 2 */
+  /* USER CODE END TIM6_Init 2 */
 
 }
 
@@ -244,9 +245,10 @@ static void MX_GPIO_Init(void)
 
 void Damian_Marudzi(uint16_t czas)
 {
-	LL_TIM_ClearFlag_UPDATE(TIM1);
-	LL_TIM_SetAutoReload(TIM2, czas);
-	while(LL_TIM_IsActiveFlag_UPDATE(TIM2) == 0);
+	LL_TIM_GenerateEvent_UPDATE(TIM6);
+	LL_TIM_ClearFlag_UPDATE(TIM6);
+	LL_TIM_SetAutoReload(TIM6, czas);
+	while(LL_TIM_IsActiveFlag_UPDATE(TIM6) == 0);
 }
 
 /* USER CODE END 4 */
