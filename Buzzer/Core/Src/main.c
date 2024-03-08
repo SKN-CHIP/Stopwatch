@@ -253,7 +253,7 @@ void Damian_Marudzi(uint16_t czas)
 }
 void LedTest()
 {
-
+	LL_GPIO_SetOutputPin(Led_GPIO_Port, Led_Pin);
 
 }
 /* USER CODE END 4 */
