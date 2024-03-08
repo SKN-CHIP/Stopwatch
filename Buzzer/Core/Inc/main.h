@@ -73,6 +73,8 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define test_Pin LL_GPIO_PIN_5
 #define test_GPIO_Port GPIOA
+#define Led_Pin LL_GPIO_PIN_7
+#define Led_GPIO_Port GPIOC
 #define Buzzer_Pin LL_GPIO_PIN_10
 #define Buzzer_GPIO_Port GPIOA
 #ifndef NVIC_PRIORITYGROUP_0
