@@ -106,10 +106,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	 LL_GPIO_SetOutputPin(test_GPIO_Port, test_Pin);
-	 Damian_Marudzi(4000);
-	 LL_GPIO_ResetOutputPin(test_GPIO_Port, test_Pin);
-	 Damian_Marudzi(1000);
+
+	  LedTest();
 
 
   }
@@ -253,7 +251,11 @@ void Damian_Marudzi(uint16_t czas)
 	LL_TIM_SetAutoReload(TIM6, czas);
 	while(LL_TIM_IsActiveFlag_UPDATE(TIM6) == 0);
 }
+void LedTest()
+{
 
+
+}
 /* USER CODE END 4 */
 
 /**
