@@ -42,11 +42,9 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-	enum LedState {
-    zero,
-    one};
 
-	 enum LedState tablicaLed[] = {one, one, one, one, one, one, one, one, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero};
+
+	 int  tablicaLed[] = {1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -257,15 +255,17 @@ void Damian_Marudzi(uint16_t czas)
 }
 void LedTest()
 {
-	LL_GPIO_ResetOutputPin(Led_GPIO_Port, Led_Pin);
-	Damian_Marudzi(450);
+	//LL_GPIO_ResetOutputPin(Led_GPIO_Port, Led_Pin);
+	//Damian_Marudzi(400);
 	for(int i=0; i<8; i++)
 	{
+		LL_GPIO_ResetOutputPin(Led_GPIO_Port, Led_Pin);
+		Damian_Marudzi(400);
 		if(i == 0)
 		{
-			for(int j= 24; j>=0; j--)
+			for(int j= 0; j<24; j++)
 			{
-				if(tablicaLed[j] == zero)
+				if(tablicaLed[j] == 0)
 				{
 					LL_GPIO_SetOutputPin(Led_GPIO_Port, Led_Pin);
 					Damian_Marudzi(3);
@@ -283,7 +283,7 @@ void LedTest()
 		}
 		else
 		{
-			for(int j=24; j>=0;j--)
+			for(int j=0; j<24;j++)
 			{
 
 				LL_GPIO_SetOutputPin(Led_GPIO_Port, Led_Pin);

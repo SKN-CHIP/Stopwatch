@@ -7,45 +7,45 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
   1 .text         00000f8c  08000188  08000188  00010188  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .rodata       00000000  08001114  08001114  0002001c  2**0
+  2 .rodata       00000000  08001114  08001114  00020064  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  3 .ARM.extab    00000000  08001114  08001114  0002001c  2**0
+  3 .ARM.extab    00000000  08001114  08001114  00020064  2**0
                   CONTENTS
-  4 .ARM          00000000  08001114  08001114  0002001c  2**0
+  4 .ARM          00000000  08001114  08001114  00020064  2**0
                   CONTENTS
-  5 .preinit_array 00000000  08001114  08001114  0002001c  2**0
+  5 .preinit_array 00000000  08001114  08001114  00020064  2**0
                   CONTENTS, ALLOC, LOAD, DATA
   6 .init_array   00000004  08001114  08001114  00011114  2**2
                   CONTENTS, ALLOC, LOAD, DATA
   7 .fini_array   00000004  08001118  08001118  00011118  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  8 .data         0000001c  20000000  0800111c  00020000  2**2
+  8 .data         00000064  20000000  0800111c  00020000  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  9 .bss          0000001c  2000001c  08001138  0002001c  2**2
+  9 .bss          0000001c  20000064  08001180  00020064  2**2
                   ALLOC
- 10 ._user_heap_stack 00000600  20000038  08001138  00020038  2**0
+ 10 ._user_heap_stack 00000600  20000080  08001180  00020080  2**0
                   ALLOC
- 11 .ARM.attributes 00000030  00000000  00000000  0002001c  2**0
+ 11 .ARM.attributes 00000030  00000000  00000000  00020064  2**0
                   CONTENTS, READONLY
- 12 .comment      00000043  00000000  00000000  0002004c  2**0
+ 12 .comment      00000043  00000000  00000000  00020094  2**0
                   CONTENTS, READONLY
- 13 .debug_info   0000447e  00000000  00000000  0002008f  2**0
+ 13 .debug_info   0000445f  00000000  00000000  000200d7  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_abbrev 00000b84  00000000  00000000  0002450d  2**0
+ 14 .debug_abbrev 00000b66  00000000  00000000  00024536  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_aranges 00000510  00000000  00000000  00025098  2**3
+ 15 .debug_aranges 00000510  00000000  00000000  000250a0  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_rnglists 000003bf  00000000  00000000  000255a8  2**0
+ 16 .debug_rnglists 000003bf  00000000  00000000  000255b0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_macro  0001f6a3  00000000  00000000  00025967  2**0
+ 17 .debug_macro  0001f6a3  00000000  00000000  0002596f  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_line   00003a30  00000000  00000000  0004500a  2**0
+ 18 .debug_line   00003a30  00000000  00000000  00045012  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_str    000b1344  00000000  00000000  00048a3a  2**0
+ 19 .debug_str    000b1336  00000000  00000000  00048a42  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .debug_frame  00001458  00000000  00000000  000f9d80  2**2
+ 20 .debug_frame  00001458  00000000  00000000  000f9d78  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 0000005e  00000000  00000000  000fb1d8  2**0
+ 21 .debug_line_str 0000005e  00000000  00000000  000fb1d0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -62,7 +62,7 @@ Disassembly of section .text:
  800019a:	2301      	movs	r3, #1
  800019c:	7023      	strb	r3, [r4, #0]
  800019e:	bd10      	pop	{r4, pc}
- 80001a0:	2000001c 	.word	0x2000001c
+ 80001a0:	20000064 	.word	0x20000064
  80001a4:	00000000 	.word	0x00000000
  80001a8:	080010fc 	.word	0x080010fc
 
@@ -75,7 +75,7 @@ Disassembly of section .text:
  80001b6:	f3af 8000 	nop.w
  80001ba:	bd08      	pop	{r3, pc}
  80001bc:	00000000 	.word	0x00000000
- 80001c0:	20000020 	.word	0x20000020
+ 80001c0:	20000068 	.word	0x20000068
  80001c4:	080010fc 	.word	0x080010fc
 
 080001c8 <__NVIC_SetPriorityGrouping>:
@@ -1507,33 +1507,34 @@ void LedTest()
  80009a0:	b580      	push	{r7, lr}
  80009a2:	b084      	sub	sp, #16
  80009a4:	af00      	add	r7, sp, #0
-	LL_GPIO_ResetOutputPin(Led_GPIO_Port, Led_Pin);
- 80009a6:	2180      	movs	r1, #128	; 0x80
- 80009a8:	482d      	ldr	r0, [pc, #180]	; (8000a60 <LedTest+0xc0>)
- 80009aa:	f7ff fee0 	bl	800076e <LL_GPIO_ResetOutputPin>
-	Damian_Marudzi(450);
- 80009ae:	f44f 70e1 	mov.w	r0, #450	; 0x1c2
- 80009b2:	f7ff ffd7 	bl	8000964 <Damian_Marudzi>
+	//LL_GPIO_ResetOutputPin(Led_GPIO_Port, Led_Pin);
+	//Damian_Marudzi(400);
 	for(int i=0; i<8; i++)
- 80009b6:	2300      	movs	r3, #0
- 80009b8:	60fb      	str	r3, [r7, #12]
- 80009ba:	e049      	b.n	8000a50 <LedTest+0xb0>
+ 80009a6:	2300      	movs	r3, #0
+ 80009a8:	60fb      	str	r3, [r7, #12]
+ 80009aa:	e051      	b.n	8000a50 <LedTest+0xb0>
 	{
+		LL_GPIO_ResetOutputPin(Led_GPIO_Port, Led_Pin);
+ 80009ac:	2180      	movs	r1, #128	; 0x80
+ 80009ae:	482c      	ldr	r0, [pc, #176]	; (8000a60 <LedTest+0xc0>)
+ 80009b0:	f7ff fedd 	bl	800076e <LL_GPIO_ResetOutputPin>
+		Damian_Marudzi(400);
+ 80009b4:	f44f 70c8 	mov.w	r0, #400	; 0x190
+ 80009b8:	f7ff ffd4 	bl	8000964 <Damian_Marudzi>
 		if(i == 0)
  80009bc:	68fb      	ldr	r3, [r7, #12]
  80009be:	2b00      	cmp	r3, #0
  80009c0:	d12c      	bne.n	8000a1c <LedTest+0x7c>
 		{
-			for(int j= 24; j>=0; j--)
- 80009c2:	2318      	movs	r3, #24
+			for(int j= 0; j<24; j++)
+ 80009c2:	2300      	movs	r3, #0
  80009c4:	60bb      	str	r3, [r7, #8]
  80009c6:	e025      	b.n	8000a14 <LedTest+0x74>
 			{
-				if(tablicaLed[j] == zero)
+				if(tablicaLed[j] == 0)
  80009c8:	4a26      	ldr	r2, [pc, #152]	; (8000a64 <LedTest+0xc4>)
  80009ca:	68bb      	ldr	r3, [r7, #8]
- 80009cc:	4413      	add	r3, r2
- 80009ce:	781b      	ldrb	r3, [r3, #0]
+ 80009cc:	f852 3023 	ldr.w	r3, [r2, r3, lsl #2]
  80009d0:	2b00      	cmp	r3, #0
  80009d2:	d10e      	bne.n	80009f2 <LedTest+0x52>
 				{
@@ -1559,31 +1560,31 @@ void LedTest()
  80009f2:	2180      	movs	r1, #128	; 0x80
  80009f4:	481a      	ldr	r0, [pc, #104]	; (8000a60 <LedTest+0xc0>)
  80009f6:	f7ff feac 	bl	8000752 <LL_GPIO_SetOutputPin>
-					Damian_Marudzi(7);
- 80009fa:	2007      	movs	r0, #7
+					Damian_Marudzi(6);
+ 80009fa:	2006      	movs	r0, #6
  80009fc:	f7ff ffb2 	bl	8000964 <Damian_Marudzi>
 					LL_GPIO_ResetOutputPin(Led_GPIO_Port, Led_Pin);
  8000a00:	2180      	movs	r1, #128	; 0x80
  8000a02:	4817      	ldr	r0, [pc, #92]	; (8000a60 <LedTest+0xc0>)
  8000a04:	f7ff feb3 	bl	800076e <LL_GPIO_ResetOutputPin>
-					Damian_Marudzi(3);
- 8000a08:	2003      	movs	r0, #3
+					Damian_Marudzi(4);
+ 8000a08:	2004      	movs	r0, #4
  8000a0a:	f7ff ffab 	bl	8000964 <Damian_Marudzi>
-			for(int j= 24; j>=0; j--)
+			for(int j= 0; j<24; j++)
  8000a0e:	68bb      	ldr	r3, [r7, #8]
- 8000a10:	3b01      	subs	r3, #1
+ 8000a10:	3301      	adds	r3, #1
  8000a12:	60bb      	str	r3, [r7, #8]
  8000a14:	68bb      	ldr	r3, [r7, #8]
- 8000a16:	2b00      	cmp	r3, #0
- 8000a18:	dad6      	bge.n	80009c8 <LedTest+0x28>
+ 8000a16:	2b17      	cmp	r3, #23
+ 8000a18:	ddd6      	ble.n	80009c8 <LedTest+0x28>
  8000a1a:	e016      	b.n	8000a4a <LedTest+0xaa>
 				}
 			}
 		}
 		else
 		{
-			for(int j=24; j>=0;j--)
- 8000a1c:	2318      	movs	r3, #24
+			for(int j=0; j<24;j++)
+ 8000a1c:	2300      	movs	r3, #0
  8000a1e:	607b      	str	r3, [r7, #4]
  8000a20:	e010      	b.n	8000a44 <LedTest+0xa4>
 			{
@@ -1602,20 +1603,20 @@ void LedTest()
 				Damian_Marudzi(7);
  8000a38:	2007      	movs	r0, #7
  8000a3a:	f7ff ff93 	bl	8000964 <Damian_Marudzi>
-			for(int j=24; j>=0;j--)
+			for(int j=0; j<24;j++)
  8000a3e:	687b      	ldr	r3, [r7, #4]
- 8000a40:	3b01      	subs	r3, #1
+ 8000a40:	3301      	adds	r3, #1
  8000a42:	607b      	str	r3, [r7, #4]
  8000a44:	687b      	ldr	r3, [r7, #4]
- 8000a46:	2b00      	cmp	r3, #0
- 8000a48:	daeb      	bge.n	8000a22 <LedTest+0x82>
+ 8000a46:	2b17      	cmp	r3, #23
+ 8000a48:	ddeb      	ble.n	8000a22 <LedTest+0x82>
 	for(int i=0; i<8; i++)
  8000a4a:	68fb      	ldr	r3, [r7, #12]
  8000a4c:	3301      	adds	r3, #1
  8000a4e:	60fb      	str	r3, [r7, #12]
  8000a50:	68fb      	ldr	r3, [r7, #12]
  8000a52:	2b07      	cmp	r3, #7
- 8000a54:	ddb2      	ble.n	80009bc <LedTest+0x1c>
+ 8000a54:	ddaa      	ble.n	80009ac <LedTest+0xc>
 			}
 
 		}
@@ -1904,13 +1905,13 @@ LoopForever:
   ldr r0, =_sdata
  8000b20:	20000000 	.word	0x20000000
   ldr r1, =_edata
- 8000b24:	2000001c 	.word	0x2000001c
+ 8000b24:	20000064 	.word	0x20000064
   ldr r2, =_sidata
  8000b28:	0800111c 	.word	0x0800111c
   ldr r2, =_sbss
- 8000b2c:	2000001c 	.word	0x2000001c
+ 8000b2c:	20000064 	.word	0x20000064
   ldr r4, =_ebss
- 8000b30:	20000038 	.word	0x20000038
+ 8000b30:	20000080 	.word	0x20000080
 
 08000b34 <ADC1_2_IRQHandler>:
  * @retval : None
@@ -2819,7 +2820,7 @@ void LL_SetSystemCoreClock(uint32_t HCLKFrequency)
  80010a8:	f85d 7b04 	ldr.w	r7, [sp], #4
  80010ac:	4770      	bx	lr
  80010ae:	bf00      	nop
- 80010b0:	20000018 	.word	0x20000018
+ 80010b0:	20000060 	.word	0x20000060
 
 080010b4 <__libc_init_array>:
  80010b4:	b570      	push	{r4, r5, r6, lr}
