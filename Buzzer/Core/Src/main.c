@@ -235,7 +235,7 @@ static void MX_GPIO_Init(void)
   /**/
   GPIO_InitStruct.Pin = Led_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
-  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
   LL_GPIO_Init(Led_GPIO_Port, &GPIO_InitStruct);
@@ -255,13 +255,9 @@ void Damian_Marudzi(uint16_t czas)
 }
 void LedTest()
 {
-	//LL_GPIO_ResetOutputPin(Led_GPIO_Port, Led_Pin);
-	//Damian_Marudzi(400);
 	for(int i=0; i<8; i++)
 	{
-		LL_GPIO_ResetOutputPin(Led_GPIO_Port, Led_Pin);
-		Damian_Marudzi(400);
-		if(i == 0)
+		if(i == 4)
 		{
 			for(int j= 0; j<24; j++)
 			{
@@ -292,9 +288,10 @@ void LedTest()
 				Damian_Marudzi(7);
 
 			}
-
 		}
 	}
+	LL_GPIO_ResetOutputPin(Led_GPIO_Port, Led_Pin);
+	Damian_Marudzi(450);
 
 }
 /* USER CODE END 4 */

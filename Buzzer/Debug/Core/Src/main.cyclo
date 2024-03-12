@@ -40,4 +40,4 @@
 ../Core/Src/main.c:210:13:MX_GPIO_Init	1
 ../Core/Src/main.c:249:6:Damian_Marudzi	2
 ../Core/Src/main.c:256:6:LedTest	6
-../Core/Src/main.c:306:6:Error_Handler	1
+../Core/Src/main.c:303:6:Error_Handler	1

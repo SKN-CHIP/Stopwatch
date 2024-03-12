@@ -1440,8 +1440,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
  800093e:	2301      	movs	r3, #1
  8000940:	607b      	str	r3, [r7, #4]
-  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
- 8000942:	2300      	movs	r3, #0
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+ 8000942:	2303      	movs	r3, #3
  8000944:	60bb      	str	r3, [r7, #8]
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
  8000946:	2300      	movs	r3, #0
@@ -1507,129 +1507,127 @@ void LedTest()
  80009a0:	b580      	push	{r7, lr}
  80009a2:	b084      	sub	sp, #16
  80009a4:	af00      	add	r7, sp, #0
-	//LL_GPIO_ResetOutputPin(Led_GPIO_Port, Led_Pin);
-	//Damian_Marudzi(400);
 	for(int i=0; i<8; i++)
  80009a6:	2300      	movs	r3, #0
  80009a8:	60fb      	str	r3, [r7, #12]
- 80009aa:	e051      	b.n	8000a50 <LedTest+0xb0>
+ 80009aa:	e049      	b.n	8000a40 <LedTest+0xa0>
 	{
-		LL_GPIO_ResetOutputPin(Led_GPIO_Port, Led_Pin);
- 80009ac:	2180      	movs	r1, #128	; 0x80
- 80009ae:	482c      	ldr	r0, [pc, #176]	; (8000a60 <LedTest+0xc0>)
- 80009b0:	f7ff fedd 	bl	800076e <LL_GPIO_ResetOutputPin>
-		Damian_Marudzi(400);
- 80009b4:	f44f 70c8 	mov.w	r0, #400	; 0x190
- 80009b8:	f7ff ffd4 	bl	8000964 <Damian_Marudzi>
-		if(i == 0)
- 80009bc:	68fb      	ldr	r3, [r7, #12]
- 80009be:	2b00      	cmp	r3, #0
- 80009c0:	d12c      	bne.n	8000a1c <LedTest+0x7c>
+		if(i == 4)
+ 80009ac:	68fb      	ldr	r3, [r7, #12]
+ 80009ae:	2b04      	cmp	r3, #4
+ 80009b0:	d12c      	bne.n	8000a0c <LedTest+0x6c>
 		{
 			for(int j= 0; j<24; j++)
- 80009c2:	2300      	movs	r3, #0
- 80009c4:	60bb      	str	r3, [r7, #8]
- 80009c6:	e025      	b.n	8000a14 <LedTest+0x74>
+ 80009b2:	2300      	movs	r3, #0
+ 80009b4:	60bb      	str	r3, [r7, #8]
+ 80009b6:	e025      	b.n	8000a04 <LedTest+0x64>
 			{
 				if(tablicaLed[j] == 0)
- 80009c8:	4a26      	ldr	r2, [pc, #152]	; (8000a64 <LedTest+0xc4>)
- 80009ca:	68bb      	ldr	r3, [r7, #8]
- 80009cc:	f852 3023 	ldr.w	r3, [r2, r3, lsl #2]
- 80009d0:	2b00      	cmp	r3, #0
- 80009d2:	d10e      	bne.n	80009f2 <LedTest+0x52>
+ 80009b8:	4a29      	ldr	r2, [pc, #164]	; (8000a60 <LedTest+0xc0>)
+ 80009ba:	68bb      	ldr	r3, [r7, #8]
+ 80009bc:	f852 3023 	ldr.w	r3, [r2, r3, lsl #2]
+ 80009c0:	2b00      	cmp	r3, #0
+ 80009c2:	d10e      	bne.n	80009e2 <LedTest+0x42>
 				{
 					LL_GPIO_SetOutputPin(Led_GPIO_Port, Led_Pin);
- 80009d4:	2180      	movs	r1, #128	; 0x80
- 80009d6:	4822      	ldr	r0, [pc, #136]	; (8000a60 <LedTest+0xc0>)
- 80009d8:	f7ff febb 	bl	8000752 <LL_GPIO_SetOutputPin>
+ 80009c4:	2180      	movs	r1, #128	; 0x80
+ 80009c6:	4827      	ldr	r0, [pc, #156]	; (8000a64 <LedTest+0xc4>)
+ 80009c8:	f7ff fec3 	bl	8000752 <LL_GPIO_SetOutputPin>
 					Damian_Marudzi(3);
- 80009dc:	2003      	movs	r0, #3
- 80009de:	f7ff ffc1 	bl	8000964 <Damian_Marudzi>
+ 80009cc:	2003      	movs	r0, #3
+ 80009ce:	f7ff ffc9 	bl	8000964 <Damian_Marudzi>
 					LL_GPIO_ResetOutputPin(Led_GPIO_Port, Led_Pin);
- 80009e2:	2180      	movs	r1, #128	; 0x80
- 80009e4:	481e      	ldr	r0, [pc, #120]	; (8000a60 <LedTest+0xc0>)
- 80009e6:	f7ff fec2 	bl	800076e <LL_GPIO_ResetOutputPin>
+ 80009d2:	2180      	movs	r1, #128	; 0x80
+ 80009d4:	4823      	ldr	r0, [pc, #140]	; (8000a64 <LedTest+0xc4>)
+ 80009d6:	f7ff feca 	bl	800076e <LL_GPIO_ResetOutputPin>
 					Damian_Marudzi(7);
- 80009ea:	2007      	movs	r0, #7
- 80009ec:	f7ff ffba 	bl	8000964 <Damian_Marudzi>
- 80009f0:	e00d      	b.n	8000a0e <LedTest+0x6e>
+ 80009da:	2007      	movs	r0, #7
+ 80009dc:	f7ff ffc2 	bl	8000964 <Damian_Marudzi>
+ 80009e0:	e00d      	b.n	80009fe <LedTest+0x5e>
 				}
 				else
 				{
 					LL_GPIO_SetOutputPin(Led_GPIO_Port, Led_Pin);
- 80009f2:	2180      	movs	r1, #128	; 0x80
- 80009f4:	481a      	ldr	r0, [pc, #104]	; (8000a60 <LedTest+0xc0>)
- 80009f6:	f7ff feac 	bl	8000752 <LL_GPIO_SetOutputPin>
+ 80009e2:	2180      	movs	r1, #128	; 0x80
+ 80009e4:	481f      	ldr	r0, [pc, #124]	; (8000a64 <LedTest+0xc4>)
+ 80009e6:	f7ff feb4 	bl	8000752 <LL_GPIO_SetOutputPin>
 					Damian_Marudzi(6);
- 80009fa:	2006      	movs	r0, #6
- 80009fc:	f7ff ffb2 	bl	8000964 <Damian_Marudzi>
+ 80009ea:	2006      	movs	r0, #6
+ 80009ec:	f7ff ffba 	bl	8000964 <Damian_Marudzi>
 					LL_GPIO_ResetOutputPin(Led_GPIO_Port, Led_Pin);
- 8000a00:	2180      	movs	r1, #128	; 0x80
- 8000a02:	4817      	ldr	r0, [pc, #92]	; (8000a60 <LedTest+0xc0>)
- 8000a04:	f7ff feb3 	bl	800076e <LL_GPIO_ResetOutputPin>
+ 80009f0:	2180      	movs	r1, #128	; 0x80
+ 80009f2:	481c      	ldr	r0, [pc, #112]	; (8000a64 <LedTest+0xc4>)
+ 80009f4:	f7ff febb 	bl	800076e <LL_GPIO_ResetOutputPin>
 					Damian_Marudzi(4);
- 8000a08:	2004      	movs	r0, #4
- 8000a0a:	f7ff ffab 	bl	8000964 <Damian_Marudzi>
+ 80009f8:	2004      	movs	r0, #4
+ 80009fa:	f7ff ffb3 	bl	8000964 <Damian_Marudzi>
 			for(int j= 0; j<24; j++)
- 8000a0e:	68bb      	ldr	r3, [r7, #8]
- 8000a10:	3301      	adds	r3, #1
- 8000a12:	60bb      	str	r3, [r7, #8]
- 8000a14:	68bb      	ldr	r3, [r7, #8]
- 8000a16:	2b17      	cmp	r3, #23
- 8000a18:	ddd6      	ble.n	80009c8 <LedTest+0x28>
- 8000a1a:	e016      	b.n	8000a4a <LedTest+0xaa>
+ 80009fe:	68bb      	ldr	r3, [r7, #8]
+ 8000a00:	3301      	adds	r3, #1
+ 8000a02:	60bb      	str	r3, [r7, #8]
+ 8000a04:	68bb      	ldr	r3, [r7, #8]
+ 8000a06:	2b17      	cmp	r3, #23
+ 8000a08:	ddd6      	ble.n	80009b8 <LedTest+0x18>
+ 8000a0a:	e016      	b.n	8000a3a <LedTest+0x9a>
 				}
 			}
 		}
 		else
 		{
 			for(int j=0; j<24;j++)
- 8000a1c:	2300      	movs	r3, #0
- 8000a1e:	607b      	str	r3, [r7, #4]
- 8000a20:	e010      	b.n	8000a44 <LedTest+0xa4>
+ 8000a0c:	2300      	movs	r3, #0
+ 8000a0e:	607b      	str	r3, [r7, #4]
+ 8000a10:	e010      	b.n	8000a34 <LedTest+0x94>
 			{
 
 				LL_GPIO_SetOutputPin(Led_GPIO_Port, Led_Pin);
- 8000a22:	2180      	movs	r1, #128	; 0x80
- 8000a24:	480e      	ldr	r0, [pc, #56]	; (8000a60 <LedTest+0xc0>)
- 8000a26:	f7ff fe94 	bl	8000752 <LL_GPIO_SetOutputPin>
+ 8000a12:	2180      	movs	r1, #128	; 0x80
+ 8000a14:	4813      	ldr	r0, [pc, #76]	; (8000a64 <LedTest+0xc4>)
+ 8000a16:	f7ff fe9c 	bl	8000752 <LL_GPIO_SetOutputPin>
 				Damian_Marudzi(3);
- 8000a2a:	2003      	movs	r0, #3
- 8000a2c:	f7ff ff9a 	bl	8000964 <Damian_Marudzi>
+ 8000a1a:	2003      	movs	r0, #3
+ 8000a1c:	f7ff ffa2 	bl	8000964 <Damian_Marudzi>
 				LL_GPIO_ResetOutputPin(Led_GPIO_Port, Led_Pin);
- 8000a30:	2180      	movs	r1, #128	; 0x80
- 8000a32:	480b      	ldr	r0, [pc, #44]	; (8000a60 <LedTest+0xc0>)
- 8000a34:	f7ff fe9b 	bl	800076e <LL_GPIO_ResetOutputPin>
+ 8000a20:	2180      	movs	r1, #128	; 0x80
+ 8000a22:	4810      	ldr	r0, [pc, #64]	; (8000a64 <LedTest+0xc4>)
+ 8000a24:	f7ff fea3 	bl	800076e <LL_GPIO_ResetOutputPin>
 				Damian_Marudzi(7);
- 8000a38:	2007      	movs	r0, #7
- 8000a3a:	f7ff ff93 	bl	8000964 <Damian_Marudzi>
+ 8000a28:	2007      	movs	r0, #7
+ 8000a2a:	f7ff ff9b 	bl	8000964 <Damian_Marudzi>
 			for(int j=0; j<24;j++)
- 8000a3e:	687b      	ldr	r3, [r7, #4]
- 8000a40:	3301      	adds	r3, #1
- 8000a42:	607b      	str	r3, [r7, #4]
- 8000a44:	687b      	ldr	r3, [r7, #4]
- 8000a46:	2b17      	cmp	r3, #23
- 8000a48:	ddeb      	ble.n	8000a22 <LedTest+0x82>
+ 8000a2e:	687b      	ldr	r3, [r7, #4]
+ 8000a30:	3301      	adds	r3, #1
+ 8000a32:	607b      	str	r3, [r7, #4]
+ 8000a34:	687b      	ldr	r3, [r7, #4]
+ 8000a36:	2b17      	cmp	r3, #23
+ 8000a38:	ddeb      	ble.n	8000a12 <LedTest+0x72>
 	for(int i=0; i<8; i++)
- 8000a4a:	68fb      	ldr	r3, [r7, #12]
- 8000a4c:	3301      	adds	r3, #1
- 8000a4e:	60fb      	str	r3, [r7, #12]
- 8000a50:	68fb      	ldr	r3, [r7, #12]
- 8000a52:	2b07      	cmp	r3, #7
- 8000a54:	ddaa      	ble.n	80009ac <LedTest+0xc>
-			}
+ 8000a3a:	68fb      	ldr	r3, [r7, #12]
+ 8000a3c:	3301      	adds	r3, #1
+ 8000a3e:	60fb      	str	r3, [r7, #12]
+ 8000a40:	68fb      	ldr	r3, [r7, #12]
+ 8000a42:	2b07      	cmp	r3, #7
+ 8000a44:	ddb2      	ble.n	80009ac <LedTest+0xc>
 
+			}
 		}
 	}
+	LL_GPIO_ResetOutputPin(Led_GPIO_Port, Led_Pin);
+ 8000a46:	2180      	movs	r1, #128	; 0x80
+ 8000a48:	4806      	ldr	r0, [pc, #24]	; (8000a64 <LedTest+0xc4>)
+ 8000a4a:	f7ff fe90 	bl	800076e <LL_GPIO_ResetOutputPin>
+	Damian_Marudzi(450);
+ 8000a4e:	f44f 70e1 	mov.w	r0, #450	; 0x1c2
+ 8000a52:	f7ff ff87 	bl	8000964 <Damian_Marudzi>
 
 }
  8000a56:	bf00      	nop
- 8000a58:	bf00      	nop
- 8000a5a:	3710      	adds	r7, #16
- 8000a5c:	46bd      	mov	sp, r7
- 8000a5e:	bd80      	pop	{r7, pc}
- 8000a60:	48000800 	.word	0x48000800
- 8000a64:	20000000 	.word	0x20000000
+ 8000a58:	3710      	adds	r7, #16
+ 8000a5a:	46bd      	mov	sp, r7
+ 8000a5c:	bd80      	pop	{r7, pc}
+ 8000a5e:	bf00      	nop
+ 8000a60:	20000000 	.word	0x20000000
+ 8000a64:	48000800 	.word	0x48000800
 
 08000a68 <NMI_Handler>:
 /******************************************************************************/
