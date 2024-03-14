@@ -18,10 +18,9 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "led_pwm.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -31,7 +30,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+	#define  LH 27
+	#define  LL 14
+	#define  RESET 0
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -42,15 +43,18 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+	uint8_t red[] =   {LL,LL,LL,LL,LL,LL,LL,LL,LH,LH,LH,LH,LH,LH,LH,LH,LL,LL,LL,LL,LL,LL,LL,LL};
+	uint8_t green[] = {LH,LH,LH,LH,LH,LH,LH,LH,LL,LL,LL,LL,LL,LL,LL,LL,LL,LL,LL,LL,LL,LL,LL,LL};
+	uint8_t blue[] =  {LL,LL,LL,LL,LL,LL,LL,LL,LL,LL,LL,LL,LL,LL,LL,LL,LH,LH,LH,LH,LH,LH,LH,LH};
+	uint8_t reset[] = {RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET};
 
-
-	 int  tablicaLed[] = {1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM6_Init(void);
+static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
 void Damian_Marudzi(uint16_t czas);
 void LedTest();
@@ -97,7 +101,10 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_TIM6_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
+  	  dma_init();
+  	  enable_timer3();
 
   /* USER CODE END 2 */
 
@@ -105,11 +112,12 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+  	  LedTest();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
 
-	  LedTest();
+
 
 
   }
@@ -166,6 +174,66 @@ void SystemClock_Config(void)
 }
 
 /**
+  * @brief TIM3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM3_Init(void)
+{
+
+  /* USER CODE BEGIN TIM3_Init 0 */
+
+  /* USER CODE END TIM3_Init 0 */
+
+  LL_TIM_InitTypeDef TIM_InitStruct = {0};
+  LL_TIM_OC_InitTypeDef TIM_OC_InitStruct = {0};
+
+  LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  /* Peripheral clock enable */
+  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM3);
+
+  /* USER CODE BEGIN TIM3_Init 1 */
+
+  /* USER CODE END TIM3_Init 1 */
+  TIM_InitStruct.Prescaler = 0;
+  TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
+  TIM_InitStruct.Autoreload = 39;
+  TIM_InitStruct.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1;
+  LL_TIM_Init(TIM3, &TIM_InitStruct);
+  LL_TIM_DisableARRPreload(TIM3);
+  LL_TIM_SetClockSource(TIM3, LL_TIM_CLOCKSOURCE_INTERNAL);
+  LL_TIM_OC_EnablePreload(TIM3, LL_TIM_CHANNEL_CH1);
+  TIM_OC_InitStruct.OCMode = LL_TIM_OCMODE_PWM1;
+  TIM_OC_InitStruct.OCState = LL_TIM_OCSTATE_DISABLE;
+  TIM_OC_InitStruct.OCNState = LL_TIM_OCSTATE_DISABLE;
+  TIM_OC_InitStruct.CompareValue = 0;
+  TIM_OC_InitStruct.OCPolarity = LL_TIM_OCPOLARITY_HIGH;
+  LL_TIM_OC_Init(TIM3, LL_TIM_CHANNEL_CH1, &TIM_OC_InitStruct);
+  LL_TIM_OC_DisableFast(TIM3, LL_TIM_CHANNEL_CH1);
+  LL_TIM_SetOCRefClearInputSource(TIM3, LL_TIM_OCREF_CLR_INT_NC);
+  LL_TIM_DisableExternalClock(TIM3);
+  LL_TIM_ConfigETR(TIM3, LL_TIM_ETR_POLARITY_NONINVERTED, LL_TIM_ETR_PRESCALER_DIV1, LL_TIM_ETR_FILTER_FDIV1);
+  LL_TIM_SetTriggerOutput(TIM3, LL_TIM_TRGO_RESET);
+  LL_TIM_DisableMasterSlaveMode(TIM3);
+  /* USER CODE BEGIN TIM3_Init 2 */
+
+  /* USER CODE END TIM3_Init 2 */
+  LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOA);
+  /**TIM3 GPIO Configuration
+  PA6   ------> TIM3_CH1
+  */
+  GPIO_InitStruct.Pin = LL_GPIO_PIN_6;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  GPIO_InitStruct.Alternate = LL_GPIO_AF_2;
+  LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+}
+
+/**
   * @brief TIM6 Initialization Function
   * @param None
   * @retval None
@@ -185,7 +253,7 @@ static void MX_TIM6_Init(void)
   /* USER CODE BEGIN TIM6_Init 1 */
 
   /* USER CODE END TIM6_Init 1 */
-  TIM_InitStruct.Prescaler = 3;
+  TIM_InitStruct.Prescaler = 31;
   TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
   TIM_InitStruct.Autoreload = 65535;
   LL_TIM_Init(TIM6, &TIM_InitStruct);
@@ -255,44 +323,29 @@ void Damian_Marudzi(uint16_t czas)
 }
 void LedTest()
 {
-	for(int i=0; i<8; i++)
+
+	Damian_Marudzi(500);
+
+
+	for(int i = 0; i<8;i++)
 	{
-		if(i == 4)
+		switch(i%3)
 		{
-			for(int j= 0; j<24; j++)
-			{
-				if(tablicaLed[j] == 0)
-				{
-					LL_GPIO_SetOutputPin(Led_GPIO_Port, Led_Pin);
-					Damian_Marudzi(3);
-					LL_GPIO_ResetOutputPin(Led_GPIO_Port, Led_Pin);
-					Damian_Marudzi(7);
-				}
-				else
-				{
-					LL_GPIO_SetOutputPin(Led_GPIO_Port, Led_Pin);
-					Damian_Marudzi(6);
-					LL_GPIO_ResetOutputPin(Led_GPIO_Port, Led_Pin);
-					Damian_Marudzi(4);
-				}
-			}
-		}
-		else
-		{
-			for(int j=0; j<24;j++)
-			{
+			case 0:
+				generate_signal(green,sizeof(green));
 
-				LL_GPIO_SetOutputPin(Led_GPIO_Port, Led_Pin);
-				Damian_Marudzi(3);
-				LL_GPIO_ResetOutputPin(Led_GPIO_Port, Led_Pin);
-				Damian_Marudzi(7);
+			break;
+			case 1:
+				generate_signal(red,sizeof(red));
 
-			}
+			break;
+			case 2:
+				generate_signal(blue,sizeof(blue));
+
+			break;
 		}
+
 	}
-	LL_GPIO_ResetOutputPin(Led_GPIO_Port, Led_Pin);
-	Damian_Marudzi(450);
-
 }
 /* USER CODE END 4 */
 
