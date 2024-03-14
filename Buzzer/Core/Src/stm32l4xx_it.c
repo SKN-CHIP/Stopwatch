@@ -197,7 +197,27 @@ void SysTick_Handler(void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32l4xx.s).                    */
 /******************************************************************************/
+/**
+  * @brief This function handles DMA1 channel6 global interrupt.
+  */
+void DMA1_Channel6_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Channel6_IRQn 0 */
+	if(LL_DMA_IsActiveFlag_TC6(DMA1) == 1)
+	{
+		LL_DMA_ClearFlag_TC6(DMA1);
+		LL_DMA_DisableChannel(DMA1, LL_DMA_CHANNEL_6);
+		LL_DMA_DisableIT_TC(DMA1, LL_DMA_CHANNEL_6);
+	}
+	else if(LL_DMA_IsActiveFlag_TE6(DMA1)){
+		LL_GPIO_SetOutputPin(Led_GPIO_Port, Led_Pin);
+	}
+  /* USER CODE END DMA1_Channel6_IRQn 0 */
 
+  /* USER CODE BEGIN DMA1_Channel6_IRQn 1 */
+
+  /* USER CODE END DMA1_Channel6_IRQn 1 */
+}
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */
