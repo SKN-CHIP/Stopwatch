@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "led_pwm.h"
@@ -30,9 +31,10 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-	#define  LH 27
-	#define  LL 14
-	#define  RESET 0
+	#define MAX_LED 8
+	#define PI 3.14159265
+	#define USE_BRIGHTNESS 1
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -43,10 +45,10 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-	uint8_t red[] =   {LL,LL,LL,LL,LL,LL,LL,LL,LH,LH,LH,LH,LH,LH,LH,LH,LL,LL,LL,LL,LL,LL,LL,LL};
-	uint8_t green[] = {LH,LH,LH,LH,LH,LH,LH,LH,LL,LL,LL,LL,LL,LL,LL,LL,LL,LL,LL,LL,LL,LL,LL,LL};
-	uint8_t blue[] =  {LL,LL,LL,LL,LL,LL,LL,LL,LL,LL,LL,LL,LL,LL,LL,LL,LH,LH,LH,LH,LH,LH,LH,LH};
-	uint8_t reset[] = {RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET,RESET};
+
+uint8_t LED_Data[MAX_LED][4];
+uint8_t LED_Mod[MAX_LED][4];
+uint16_t pwmData[(24*MAX_LED)+50];
 
 /* USER CODE END PV */
 
@@ -57,6 +59,9 @@ static void MX_TIM6_Init(void);
 static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
 void Damian_Marudzi(uint16_t czas);
+void WS2812_Send (void);
+void Set_LED (int LEDnum, int Red, int Green, int Blue);
+void Set_Brightness (int brightness);
 void LedTest();
 /* USER CODE END PFP */
 
@@ -105,14 +110,14 @@ int main(void)
   /* USER CODE BEGIN 2 */
   	  dma_init();
   	  enable_timer3();
-
+  	  LedTest();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-  	  LedTest();
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -166,7 +171,7 @@ void SystemClock_Config(void)
   }
   LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
   LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_1);
-  LL_RCC_SetAPB2Prescaler(LL_RCC_APB2_DIV_1);
+  LL_RCC_SetAPB2Prescaler(LL_RCC_APB2_DIV_2);
 
   LL_Init1msTick(32000000);
 
@@ -198,7 +203,7 @@ static void MX_TIM3_Init(void)
   /* USER CODE END TIM3_Init 1 */
   TIM_InitStruct.Prescaler = 0;
   TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
-  TIM_InitStruct.Autoreload = 39;
+  TIM_InitStruct.Autoreload = 32-LL_TIM_IC_FILTER_FDIV1_N2;
   TIM_InitStruct.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1;
   LL_TIM_Init(TIM3, &TIM_InitStruct);
   LL_TIM_DisableARRPreload(TIM3);
@@ -287,18 +292,18 @@ static void MX_GPIO_Init(void)
   LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOC);
 
   /**/
-  LL_GPIO_ResetOutputPin(GPIOA, test_Pin|Buzzer_Pin);
+  LL_GPIO_ResetOutputPin(test_GPIO_Port, test_Pin);
 
   /**/
   LL_GPIO_ResetOutputPin(Led_GPIO_Port, Led_Pin);
 
   /**/
-  GPIO_InitStruct.Pin = test_Pin|Buzzer_Pin;
+  GPIO_InitStruct.Pin = test_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-  LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  LL_GPIO_Init(test_GPIO_Port, &GPIO_InitStruct);
 
   /**/
   GPIO_InitStruct.Pin = Led_Pin;
@@ -321,32 +326,92 @@ void Damian_Marudzi(uint16_t czas)
 	LL_TIM_SetAutoReload(TIM6, czas);
 	while(LL_TIM_IsActiveFlag_UPDATE(TIM6) == 0);
 }
-void LedTest()
+void WS2812_Send (void)
 {
+	uint32_t indx=0;
+	uint32_t color;
 
-	Damian_Marudzi(500);
 
-
-	for(int i = 0; i<8;i++)
+	for (int i= 0; i<MAX_LED; i++)
 	{
-		switch(i%3)
+#if USE_BRIGHTNESS
+		color = ((LED_Mod[i][1]<<16) | (LED_Mod[i][2]<<8) | (LED_Mod[i][3]));
+#else
+		color = ((LED_Data[i][1]<<16) | (LED_Data[i][2]<<8) | (LED_Data[i][3]));
+#endif
+
+		for (int i=23; i>=0; i--)
 		{
-			case 0:
-				generate_signal(green,sizeof(green));
+			if (color&(1<<i))
+			{
+				pwmData[indx] = 27;  // 2/3 of 90
+			}
 
-			break;
-			case 1:
-				generate_signal(red,sizeof(red));
+			else pwmData[indx] = 13;  // 1/3 of 90
 
-			break;
-			case 2:
-				generate_signal(blue,sizeof(blue));
-
-			break;
+			indx++;
 		}
 
 	}
+
+	for (int i=0; i<50; i++)
+	{
+		pwmData[indx] = 0;
+		indx++;
+	}
+
+	generate_signal(pwmData,sizeof(pwmData));
 }
+void Set_Brightness (int brightness)  // 0-45
+{
+#if USE_BRIGHTNESS
+
+	if (brightness > 45) brightness = 45;
+	for (int i=0; i<MAX_LED; i++)
+	{
+		LED_Mod[i][0] = LED_Data[i][0];
+		for (int j=1; j<4; j++)
+		{
+			float angle = 90-brightness;  // in degrees
+			angle = angle*PI / 180;  // in rad
+			LED_Mod[i][j] = (LED_Data[i][j])/(tan(angle));
+		}
+	}
+
+#endif
+
+}
+void Set_LED (int LEDnum, int Red, int Green, int Blue)
+{
+	LED_Data[LEDnum][0] = LEDnum;
+	LED_Data[LEDnum][1] = Green;
+	LED_Data[LEDnum][2] = Red;
+	LED_Data[LEDnum][3] = Blue;
+}
+void Reset_LED (void)
+{
+	for (int i=0; i<MAX_LED; i++)
+	{
+		LED_Data[i][0] = i;
+		LED_Data[i][1] = 0;
+		LED_Data[i][2] = 0;
+		LED_Data[i][3] = 0;
+	}
+}
+void LedTest()
+{
+	Set_LED(0, 255, 0, 0);
+	Set_LED(1, 0, 255, 0);
+	Set_LED(2, 0, 0, 255);
+	Set_LED(3, 46, 89, 128);
+	Set_LED(4, 156, 233, 100);
+	Set_LED(5, 102, 0, 235);
+	Set_LED(6, 47, 38, 77);
+	Set_LED(7, 255, 200, 0);
+	Set_Brightness(5);
+	WS2812_Send();
+}
+
 /* USER CODE END 4 */
 
 /**
