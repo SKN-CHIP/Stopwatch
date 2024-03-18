@@ -330,7 +330,7 @@ void WS2812_Send (void)
 {
 	uint32_t indx=0;
 	uint32_t color;
-
+	Set_Brightness(15);
 
 	for (int i= 0; i<MAX_LED; i++)
 	{
@@ -403,12 +403,11 @@ void LedTest()
 	Set_LED(0, 255, 0, 0);
 	Set_LED(1, 0, 255, 0);
 	Set_LED(2, 0, 0, 255);
-	Set_LED(3, 46, 89, 128);
-	Set_LED(4, 156, 233, 100);
-	Set_LED(5, 102, 0, 235);
-	Set_LED(6, 47, 38, 77);
-	Set_LED(7, 255, 200, 0);
-	Set_Brightness(5);
+	Set_LED(3, 255, 0, 0);
+	Set_LED(4, 0, 255, 0);
+	Set_LED(5, 0, 0, 255);
+	Set_LED(6, 255, 0, 191);
+	Set_LED(7, 255, 255, 0);
 	WS2812_Send();
 }
 
