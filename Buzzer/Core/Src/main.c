@@ -427,7 +427,18 @@ void LedTest(int mode)
 				{
 					Set_LED(i-1, 0, 0, 0);
 				}
-				Set_LED(i, 255, 0, 0);
+				switch(i%3)
+				{
+					case 0:
+						Set_LED(i, 255, 0, 0);
+						break;
+					case 1:
+						Set_LED(i, 0, 255, 0);
+					break;
+					case 2:
+						Set_LED(i, 0, 0, 255);
+					break;
+				}
 				WS2812_Send();
 				Damian_Marudzi(50000000);
 			}
