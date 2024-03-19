@@ -48,7 +48,7 @@
 
 uint8_t LED_Data[MAX_LED][4];
 uint8_t LED_Mod[MAX_LED][4];
-uint16_t pwmData[(24*MAX_LED)+50];
+uint16_t pwmData[50+(24*MAX_LED)+50];
 
 /* USER CODE END PV */
 
@@ -58,11 +58,11 @@ static void MX_GPIO_Init(void);
 static void MX_TIM6_Init(void);
 static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
-void Damian_Marudzi(uint16_t czas);
+void Damian_Marudzi(uint32_t czas);
 void WS2812_Send (void);
 void Set_LED (int LEDnum, int Red, int Green, int Blue);
 void Set_Brightness (int brightness);
-void LedTest();
+void LedTest(int mode);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -110,14 +110,13 @@ int main(void)
   /* USER CODE BEGIN 2 */
   	  dma_init();
   	  enable_timer3();
-  	  LedTest();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
+  	LedTest(2);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -319,7 +318,7 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
-void Damian_Marudzi(uint16_t czas)
+void Damian_Marudzi(uint32_t czas)
 {
 	LL_TIM_GenerateEvent_UPDATE(TIM6);
 	LL_TIM_ClearFlag_UPDATE(TIM6);
@@ -330,7 +329,13 @@ void WS2812_Send (void)
 {
 	uint32_t indx=0;
 	uint32_t color;
-	Set_Brightness(15);
+	Set_Brightness(2);
+
+	for (int i=0; i<50; i++)
+	{
+		pwmData[indx] = 0;
+		indx++;
+	}
 
 	for (int i= 0; i<MAX_LED; i++)
 	{
@@ -398,17 +403,36 @@ void Reset_LED (void)
 		LED_Data[i][3] = 0;
 	}
 }
-void LedTest()
+void LedTest(int mode)
 {
-	Set_LED(0, 255, 0, 0);
-	Set_LED(1, 0, 255, 0);
-	Set_LED(2, 0, 0, 255);
-	Set_LED(3, 255, 0, 0);
-	Set_LED(4, 0, 255, 0);
-	Set_LED(5, 0, 0, 255);
-	Set_LED(6, 255, 0, 191);
-	Set_LED(7, 255, 255, 0);
-	WS2812_Send();
+
+	switch(mode)
+	{
+		case 1:
+			Set_LED(0, 255, 0, 0);
+			Set_LED(1, 0, 255, 0);
+			Set_LED(2, 0, 0, 255);
+			Set_LED(3, 255, 0, 0);
+			Set_LED(4, 0, 255, 0);
+			Set_LED(5, 0, 0, 255);
+			Set_LED(6, 255, 0, 191);
+			Set_LED(7, 255, 255, 0);
+			WS2812_Send();
+		break;
+		case 2:
+			Reset_LED();
+			for(int i=0; i< MAX_LED; i++)
+			{
+				if(i!=0)
+				{
+					Set_LED(i-1, 0, 0, 0);
+				}
+				Set_LED(i, 255, 0, 0);
+				WS2812_Send();
+				Damian_Marudzi(50000000);
+			}
+		break;
+	}
 }
 
 /* USER CODE END 4 */

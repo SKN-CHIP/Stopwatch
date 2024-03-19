@@ -17,12 +17,24 @@ void enable_timer3(){
 void generate_signal(uint8_t* data, uint32_t data_length){
 	LL_DMA_ConfigAddresses(DMA1, LL_DMA_CHANNEL_6, (uint32_t)data, (uint32_t)&TIM3->CCR1, LL_DMA_DIRECTION_MEMORY_TO_PERIPH);
 	LL_DMA_SetDataLength(DMA1, LL_DMA_CHANNEL_6, data_length);
-
 	LL_DMA_EnableIT_TC(DMA1, LL_DMA_CHANNEL_6);
 	LL_DMA_EnableChannel(DMA1, LL_DMA_CHANNEL_6);
 }
 
+void DMA1_Channel6_IRQHandler(void)
+{
 
+    if(LL_DMA_IsActiveFlag_TC6(DMA1) == 1)
+    {
+        LL_DMA_ClearFlag_TC6(DMA1);
+        LL_DMA_DisableChannel(DMA1, LL_DMA_CHANNEL_6);
+        LL_DMA_DisableIT_TC(DMA1, LL_DMA_CHANNEL_6);
+    }
+    else if(LL_DMA_IsActiveFlag_TE6(DMA1)){
+        LL_GPIO_SetOutputPin(Led_GPIO_Port, Led_Pin);
+    }
+
+}
 void dma_init(void)
 {
   LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA1);
