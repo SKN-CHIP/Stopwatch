@@ -2247,24 +2247,24 @@ LOAD C:/ST/STM32CubeIDE_1.14.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.ext
  .debug_line    0x0000000000003a9a      0xcb7 ./Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_ll_tim.o
  .debug_line    0x0000000000004751      0xbbd ./Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_ll_utils.o
 
-.debug_str      0x0000000000000000    0xb54fb
+.debug_str      0x0000000000000000    0xb54fc
  .debug_str     0x0000000000000000    0xadf57 ./Core/Src/led_pwm.o
                                       0xae221 (size before relaxing)
- .debug_str     0x00000000000adf57     0x43ae ./Core/Src/main.o
-                                      0xb23f8 (size before relaxing)
- .debug_str     0x00000000000b2305       0xbd ./Core/Src/stm32l4xx_it.o
+ .debug_str     0x00000000000adf57     0x43af ./Core/Src/main.o
+                                      0xb23f9 (size before relaxing)
+ .debug_str     0x00000000000b2306       0xbd ./Core/Src/stm32l4xx_it.o
                                       0xad75a (size before relaxing)
- .debug_str     0x00000000000b23c2       0x8e ./Core/Src/system_stm32l4xx.o
+ .debug_str     0x00000000000b23c3       0x8e ./Core/Src/system_stm32l4xx.o
                                       0x9ec0d (size before relaxing)
- .debug_str     0x00000000000b2450       0xe7 ./Core/Src/tm1637_ll.o
+ .debug_str     0x00000000000b2451       0xe7 ./Core/Src/tm1637_ll.o
                                       0xada36 (size before relaxing)
- .debug_str     0x00000000000b2537       0x34 ./Core/Startup/startup_stm32l476rgtx.o
+ .debug_str     0x00000000000b2538       0x34 ./Core/Startup/startup_stm32l476rgtx.o
                                          0x6a (size before relaxing)
- .debug_str     0x00000000000b256b      0x66f ./Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_ll_gpio.o
+ .debug_str     0x00000000000b256c      0x66f ./Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_ll_gpio.o
                                       0xa05cf (size before relaxing)
- .debug_str     0x00000000000b2bda     0x1b6d ./Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_ll_tim.o
+ .debug_str     0x00000000000b2bdb     0x1b6d ./Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_ll_tim.o
                                       0xa61aa (size before relaxing)
- .debug_str     0x00000000000b4747      0xdb4 ./Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_ll_utils.o
+ .debug_str     0x00000000000b4748      0xdb4 ./Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_ll_utils.o
                                       0xa59fd (size before relaxing)
 
 .debug_frame    0x0000000000000000     0x2170

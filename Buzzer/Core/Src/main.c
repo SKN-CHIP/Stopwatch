@@ -36,7 +36,7 @@
 	#define MAX_LED 8
 	#define PI 3.14159265
 	#define USE_BRIGHTNESS 1
-	#define START_TIME 946
+	#define START_TIME 5999
 
 /* USER CODE END PD */
 

@@ -41,7 +41,7 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  18 .debug_line   0000530e  00000000  00000000  00048628  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_str    000b54fb  00000000  00000000  0004d936  2**0
+ 19 .debug_str    000b54fc  00000000  00000000  0004d936  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  20 .debug_frame  00002170  00000000  00000000  00102e34  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
@@ -3519,7 +3519,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   	  time = START_TIME;
  8001bac:	4b09      	ldr	r3, [pc, #36]	; (8001bd4 <main+0x70>)
- 8001bae:	f240 32b2 	movw	r2, #946	; 0x3b2
+ 8001bae:	f241 726f 	movw	r2, #5999	; 0x176f
  8001bb2:	601a      	str	r2, [r3, #0]
   	  dma_init();
  8001bb4:	f7ff fb7e 	bl	80012b4 <dma_init>
@@ -4716,7 +4716,7 @@ void UpdateDisplay()
 	{
 		time= START_TIME;
  800231c:	4b1f      	ldr	r3, [pc, #124]	; (800239c <UpdateDisplay+0x94>)
- 800231e:	f240 32b2 	movw	r2, #946	; 0x3b2
+ 800231e:	f241 726f 	movw	r2, #5999	; 0x176f
  8002322:	601a      	str	r2, [r3, #0]
 	  	TM1637_Init();
  8002324:	f000 f8d8 	bl	80024d8 <TM1637_Init>
