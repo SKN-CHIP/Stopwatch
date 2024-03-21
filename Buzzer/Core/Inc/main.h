@@ -16,6 +16,10 @@
   *
   ******************************************************************************
   */
+#define DATA_GPIO_PORT GPIOA
+#define DATA_PIN LL_GPIO_PIN_7
+#define CLK_GPIO_PORT GPIOC
+#define CLK_PIN LL_GPIO_PIN_7
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/

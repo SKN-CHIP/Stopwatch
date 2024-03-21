@@ -1,0 +1,17 @@
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_bus.h:563:22:LL_AHB2_GRP1_EnableClock	24	static
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_gpio.h:956:22:LL_GPIO_SetOutputPin	16	static
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_gpio.h:985:22:LL_GPIO_ResetOutputPin	16	static
+../Core/Src/tm1637_ll.c:27:6:TM1637_ClkHigh	8	static
+../Core/Src/tm1637_ll.c:31:6:TM1637_ClkLow	8	static
+../Core/Src/tm1637_ll.c:35:6:TM1637_DataHigh	8	static
+../Core/Src/tm1637_ll.c:39:6:TM1637_DataLow	8	static
+../Core/Src/tm1637_ll.c:43:6:TM1637_Demo	16	static
+../Core/Src/tm1637_ll.c:56:6:TM1637_Init	8	static
+../Core/Src/tm1637_ll.c:62:6:TM1637_DisplayDecimal	32	static
+../Core/Src/tm1637_ll.c:92:6:TM1637_SetBrightness	16	static
+../Core/Src/tm1637_ll.c:105:6:TM1637_Start	8	static
+../Core/Src/tm1637_ll.c:113:6:TM1637_Stop	8	static
+../Core/Src/tm1637_ll.c:124:6:TM1637_ReadResult	8	static
+../Core/Src/tm1637_ll.c:134:6:TM1637_WriteByte	24	static
+../Core/Src/tm1637_ll.c:151:6:TM1637_DelayUsec	24	static,ignoring_inline_asm
+../Core/Src/tm1637_ll.c:160:6:TM1637_gpio_init	32	static

@@ -24,8 +24,7 @@
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_tim.h:1478:22:LL_TIM_EnableCounter	16	static
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_tim.h:2002:22:LL_TIM_CC_EnableChannel	16	static
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_tim.h:4741:22:LL_TIM_EnableDMAReq_CC1	16	static
-../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_gpio.h:956:22:LL_GPIO_SetOutputPin	16	static
 ../Core/Src/led_pwm.c:9:6:enable_timer3	8	static
 ../Core/Src/led_pwm.c:17:6:generate_signal	24	static
-../Core/Src/led_pwm.c:24:6:DMA1_Channel6_IRQHandler	8	static
-../Core/Src/led_pwm.c:38:6:dma_init	8	static
+../Core/Src/led_pwm.c:26:6:dma_init	8	static
+../Core/Src/led_pwm.c:45:6:DMA1_Channel6_IRQHandler	8	static
