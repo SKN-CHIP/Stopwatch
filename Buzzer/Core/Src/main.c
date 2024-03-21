@@ -23,6 +23,7 @@
 /* USER CODE BEGIN Includes */
 #include "led_pwm.h"
 #include "tm1637_ll.h"
+#include "math.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -35,6 +36,7 @@
 	#define MAX_LED 8
 	#define PI 3.14159265
 	#define USE_BRIGHTNESS 1
+	#define START_TIME 946
 
 /* USER CODE END PD */
 
@@ -67,6 +69,7 @@ void WS2812_Send (void);
 void Set_LED (int LEDnum, int Red, int Green, int Blue);
 void Set_Brightness (int brightness);
 void LedTest(int mode);
+void UpdateDisplay();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -113,9 +116,14 @@ int main(void)
   MX_TIM3_Init();
   MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
-  	  time = 60;
+  	  time = START_TIME;
   	  dma_init();
   	  enable_timer3();
+  	  TM1637_gpio_init();
+  	  TM1637_Init();
+  	  TM1637_SetBrightness(8);
+
+  	  //TM1637_Demo();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -309,6 +317,13 @@ static void MX_TIM7_Init(void)
   LL_TIM_DisableMasterSlaveMode(TIM7);
   /* USER CODE BEGIN TIM7_Init 2 */
 
+  LL_TIM_SetCounterMode(TIM7, LL_TIM_COUNTERMODE_UP);
+  LL_TIM_GenerateEvent_UPDATE(TIM7);
+  LL_TIM_ClearFlag_UPDATE(TIM7);
+  NVIC_SetPriority(TIM7_IRQn, 0);
+  NVIC_EnableIRQ(TIM7_IRQn);
+  LL_TIM_EnableIT_UPDATE(TIM7);
+  LL_TIM_EnableCounter(TIM7);
   /* USER CODE END TIM7_Init 2 */
 
 }
@@ -490,8 +505,23 @@ void TIM7_IRQHandler(void)
 	if(LL_TIM_IsActiveFlag_UPDATE(TIM7) == 1)
 	{
 		LL_TIM_ClearFlag_UPDATE(TIM7);
-
+		time--;
+		UpdateDisplay();
+		//TM1637_Demo();
 	}
+}
+
+void UpdateDisplay()
+{
+	uint32_t displayData = 0;
+	if(time==-1)
+	{
+		time= START_TIME;
+	  	TM1637_Init();
+	  	TM1637_SetBrightness(8);
+	}
+	displayData = floor(time/60)*100+time%60;
+	TM1637_DisplayDecimal(displayData,1);
 }
 /* USER CODE END 4 */
 
