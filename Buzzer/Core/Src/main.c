@@ -308,7 +308,7 @@ static void MX_TIM7_Init(void)
   /* USER CODE BEGIN TIM7_Init 1 */
 
   /* USER CODE END TIM7_Init 1 */
-  TIM_InitStruct.Prescaler = 32000-LL_TIM_IC_FILTER_FDIV1_N2;
+  TIM_InitStruct.Prescaler = 16000-LL_TIM_IC_FILTER_FDIV1_N2;
   TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
   TIM_InitStruct.Autoreload = 1000-LL_TIM_IC_FILTER_FDIV1_N2;
   LL_TIM_Init(TIM7, &TIM_InitStruct);
@@ -504,6 +504,7 @@ void TIM7_IRQHandler(void)
 {
 	if(LL_TIM_IsActiveFlag_UPDATE(TIM7) == 1)
 	{
+		LL_GPIO_TogglePin(test_GPIO_Port, test_Pin);
 		LL_TIM_ClearFlag_UPDATE(TIM7);
 		time--;
 		UpdateDisplay();
