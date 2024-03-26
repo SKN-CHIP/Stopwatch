@@ -5,6 +5,7 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../Core/Src/communication.c \
 ../Core/Src/led_pwm.c \
 ../Core/Src/main.c \
 ../Core/Src/stm32l4xx_it.c \
@@ -14,6 +15,7 @@ C_SRCS += \
 ../Core/Src/tm1637_ll.c 
 
 OBJS += \
+./Core/Src/communication.o \
 ./Core/Src/led_pwm.o \
 ./Core/Src/main.o \
 ./Core/Src/stm32l4xx_it.o \
@@ -23,6 +25,7 @@ OBJS += \
 ./Core/Src/tm1637_ll.o 
 
 C_DEPS += \
+./Core/Src/communication.d \
 ./Core/Src/led_pwm.d \
 ./Core/Src/main.d \
 ./Core/Src/stm32l4xx_it.d \
@@ -39,7 +42,7 @@ Core/Src/%.o Core/Src/%.su Core/Src/%.cyclo: ../Core/Src/%.c Core/Src/subdir.mk
 clean: clean-Core-2f-Src
 
 clean-Core-2f-Src:
-	-$(RM) ./Core/Src/led_pwm.cyclo ./Core/Src/led_pwm.d ./Core/Src/led_pwm.o ./Core/Src/led_pwm.su ./Core/Src/main.cyclo ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/stm32l4xx_it.cyclo ./Core/Src/stm32l4xx_it.d ./Core/Src/stm32l4xx_it.o ./Core/Src/stm32l4xx_it.su ./Core/Src/syscalls.cyclo ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.cyclo ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/system_stm32l4xx.cyclo ./Core/Src/system_stm32l4xx.d ./Core/Src/system_stm32l4xx.o ./Core/Src/system_stm32l4xx.su ./Core/Src/tm1637_ll.cyclo ./Core/Src/tm1637_ll.d ./Core/Src/tm1637_ll.o ./Core/Src/tm1637_ll.su
+	-$(RM) ./Core/Src/communication.cyclo ./Core/Src/communication.d ./Core/Src/communication.o ./Core/Src/communication.su ./Core/Src/led_pwm.cyclo ./Core/Src/led_pwm.d ./Core/Src/led_pwm.o ./Core/Src/led_pwm.su ./Core/Src/main.cyclo ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/stm32l4xx_it.cyclo ./Core/Src/stm32l4xx_it.d ./Core/Src/stm32l4xx_it.o ./Core/Src/stm32l4xx_it.su ./Core/Src/syscalls.cyclo ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.cyclo ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/system_stm32l4xx.cyclo ./Core/Src/system_stm32l4xx.d ./Core/Src/system_stm32l4xx.o ./Core/Src/system_stm32l4xx.su ./Core/Src/tm1637_ll.cyclo ./Core/Src/tm1637_ll.d ./Core/Src/tm1637_ll.o ./Core/Src/tm1637_ll.su
 
 .PHONY: clean-Core-2f-Src
 

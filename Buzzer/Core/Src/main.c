@@ -73,6 +73,8 @@ void Set_LED (int LEDnum, int Red, int Green, int Blue);
 void Set_Brightness (int brightness);
 void LedTest(int mode);
 void UpdateDisplay();
+void LedStart(void);
+void AutomaticLedMode(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -125,15 +127,17 @@ int main(void)
   	  TM1637_gpio_init();
   	  TM1637_Init();
   	  TM1637_SetBrightness(8);
-
-  	  //TM1637_Demo();
+  	  LedStart();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-  	LedTest(2);
+  	if(timer>0)
+  	{
+  		AutomaticLedMode();
+  	}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -344,7 +348,7 @@ static void MX_GPIO_Init(void)
   /* GPIO Ports Clock Enable */
   LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOH);
   LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOA);
-  LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOC);
+  LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOB);
 
   /**/
   LL_GPIO_ResetOutputPin(GPIOA, test_Pin|Buzz_Buzz_Pin);
@@ -363,7 +367,7 @@ static void MX_GPIO_Init(void)
   /**/
   GPIO_InitStruct.Pin = Led_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
-  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
   LL_GPIO_Init(Led_GPIO_Port, &GPIO_InitStruct);
@@ -501,7 +505,31 @@ void LedTest(int mode)
 		break;
 	}
 }
-
+void LedStart(void)
+{
+	Set_LED(0, 0, 0, 255);
+	Set_LED(1, 0, 0, 255);
+	Set_LED(2, 0, 0, 255);
+	Set_LED(3, 0, 0, 255);
+	Set_LED(4, 0, 0, 255);
+	Set_LED(5, 0, 0, 255);
+	Set_LED(6, 0, 0, 255);
+	WS2812_Send();
+}
+void AutomaticLedMode(void)
+{
+	Reset_LED();
+	for(int i=0; i< MAX_LED; i++)
+	{
+		if(i!=0)
+		{
+			Set_LED(i-1, 0, 0, 0);
+		}
+		Set_LED(i, 0, 0, 255);
+		WS2812_Send();
+		Damian_Marudzi(50000000);
+	}
+}
 void TIM7_IRQHandler(void)
 {
 	if(LL_TIM_IsActiveFlag_UPDATE(TIM7) == 1)
@@ -513,6 +541,10 @@ void TIM7_IRQHandler(void)
 			UpdateDisplay();
 			time--;
 		}
+		else
+		{
+			TM1637_SetBrightness(0);
+		}
 
 	}
 }
@@ -522,8 +554,14 @@ void UpdateDisplay()
 	uint32_t displayData = 0;
 	if(time<0 && time>= DISPLAY_BLINK_TIME*-2)
 	{
-		TM1637_SetBrightness((time%2)*8);
-		TM1637_DisplayDecimal(0,1);
+		if(time%2!=0)
+		{
+			dziala();
+		}
+		else
+		{
+			TM1637_DisplayDecimal(displayData,1);
+		}
 	  	return;
 	}
 	displayData = floor(time/60)*100+time%60;

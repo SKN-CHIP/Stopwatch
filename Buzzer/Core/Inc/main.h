@@ -49,7 +49,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "stm32l4xx_ll_usart.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -81,6 +81,8 @@ void Error_Handler(void);
 #define Led_GPIO_Port GPIOC
 #define Buzz_Buzz_Pin LL_GPIO_PIN_9
 #define Buzz_Buzz_GPIO_Port GPIOA
+#define Led_Pin LL_GPIO_PIN_6
+#define Led_GPIO_Port GPIOB
 #ifndef NVIC_PRIORITYGROUP_0
 #define NVIC_PRIORITYGROUP_0         ((uint32_t)0x00000007) /*!< 0 bit  for pre-emption priority,
                                                                  4 bits for subpriority */
