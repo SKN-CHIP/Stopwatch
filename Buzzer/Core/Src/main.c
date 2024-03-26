@@ -134,7 +134,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-  	if(timer>0)
+  	if(time>0)
   	{
   		AutomaticLedMode();
   	}
