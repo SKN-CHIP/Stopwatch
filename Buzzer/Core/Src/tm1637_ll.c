@@ -92,7 +92,6 @@ void dziala()
     for (int i = 0; i < 4; ++i) {
         digitArr[i] = 0x00;
         digitArr[i] |= 1 << 7;
-        v /= 10;
     }
 
     TM1637_Start();

@@ -79,6 +79,8 @@ void Error_Handler(void);
 #define test_GPIO_Port GPIOA
 #define Led_Pin LL_GPIO_PIN_7
 #define Led_GPIO_Port GPIOC
+#define Buzz_Buzz_Pin LL_GPIO_PIN_9
+#define Buzz_Buzz_GPIO_Port GPIOA
 #ifndef NVIC_PRIORITYGROUP_0
 #define NVIC_PRIORITYGROUP_0         ((uint32_t)0x00000007) /*!< 0 bit  for pre-emption priority,
                                                                  4 bits for subpriority */

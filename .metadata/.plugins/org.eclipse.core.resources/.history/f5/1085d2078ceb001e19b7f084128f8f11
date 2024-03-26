@@ -87,7 +87,7 @@ void UpdateDisplay();
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  int Buzz_check = 0, Buzz = 0;
+  int Buzz_check, Buzz = 0;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
