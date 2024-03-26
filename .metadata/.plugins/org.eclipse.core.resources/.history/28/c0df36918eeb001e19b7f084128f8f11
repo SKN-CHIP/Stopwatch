@@ -571,7 +571,7 @@ void UpdateDisplay()
 void Buzz_Buzz(int czas, int ile, int* Buzz, int* Buzz_Check){
 	if((&Buzz == 0) & (&Buzz_Check == 1)){
 		&Buzz = ile*2;
-		LL_TIM_SetAutoReload(TIM6, czas/2 - 1);
+		LL_TIM_SetAutoReload(TIM6, ile - 1);
 	}
 	if((&Buzz > 0) & (&Buzz_Check == 1) & (LL_TIM_IsActiveFlag_UPDATE(TIM6) == 1)){
 			LL_TIM_GenerateEvent_UPDATE(TIM6);
