@@ -36,7 +36,8 @@
 	#define MAX_LED 8
 	#define PI 3.14159265
 	#define USE_BRIGHTNESS 1
-	#define START_TIME 5999
+	#define START_TIME 15
+	#define DISPLAY_BLINK_TIME 3
 
 /* USER CODE END PD */
 
@@ -53,7 +54,7 @@ uint8_t LED_Data[MAX_LED][4];
 uint8_t LED_Mod[MAX_LED][4];
 uint16_t pwmData[50+(24*MAX_LED)+50];
 
-uint32_t time;
+int32_t time;
 
 /* USER CODE END PV */
 
@@ -308,7 +309,7 @@ static void MX_TIM7_Init(void)
   /* USER CODE BEGIN TIM7_Init 1 */
 
   /* USER CODE END TIM7_Init 1 */
-  TIM_InitStruct.Prescaler = 16000-LL_TIM_IC_FILTER_FDIV1_N2;
+  TIM_InitStruct.Prescaler = 32000-LL_TIM_IC_FILTER_FDIV1_N2;
   TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
   TIM_InitStruct.Autoreload = 1000-LL_TIM_IC_FILTER_FDIV1_N2;
   LL_TIM_Init(TIM7, &TIM_InitStruct);
@@ -506,20 +507,23 @@ void TIM7_IRQHandler(void)
 	{
 		LL_GPIO_TogglePin(test_GPIO_Port, test_Pin);
 		LL_TIM_ClearFlag_UPDATE(TIM7);
-		time--;
-		UpdateDisplay();
-		//TM1637_Demo();
+		if(time>= DISPLAY_BLINK_TIME*-2)
+		{
+			UpdateDisplay();
+			time--;
+		}
+
 	}
 }
 
 void UpdateDisplay()
 {
 	uint32_t displayData = 0;
-	if(time==-1)
+	if(time<0 && time>= DISPLAY_BLINK_TIME*-2)
 	{
-		time= START_TIME;
-	  	TM1637_Init();
-	  	TM1637_SetBrightness(8);
+		TM1637_SetBrightness((time%2)*8);
+		TM1637_DisplayDecimal(0,1);
+	  	return;
 	}
 	displayData = floor(time/60)*100+time%60;
 	TM1637_DisplayDecimal(displayData,1);

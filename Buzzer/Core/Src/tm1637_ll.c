@@ -58,7 +58,6 @@ void TM1637_Init(void)
     TM1637_SetBrightness(8);
 }
 
-
 void TM1637_DisplayDecimal(int v, int displaySeparator)
 {
     unsigned char digitArr[4];
@@ -67,6 +66,32 @@ void TM1637_DisplayDecimal(int v, int displaySeparator)
         if (i == 2 && displaySeparator) {
             digitArr[i] |= 1 << 7;
         }
+        v /= 10;
+    }
+
+    TM1637_Start();
+    TM1637_WriteByte(0x40);
+    TM1637_ReadResult();
+    TM1637_Stop();
+
+    TM1637_Start();
+    TM1637_WriteByte(0xc0);
+    TM1637_ReadResult();
+
+    for (int i = 0; i < 4; ++i) {
+        TM1637_WriteByte(digitArr[3 - i]);
+        TM1637_ReadResult();
+    }
+
+    TM1637_Stop();
+}
+
+void dziala()
+{
+    unsigned char digitArr[4];
+    for (int i = 0; i < 4; ++i) {
+        digitArr[i] = 0x00;
+        digitArr[i] |= 1 << 7;
         v /= 10;
     }
 
@@ -172,7 +197,7 @@ void TM1637_gpio_init(){
 	GPIO_InitStruct.Pin = CLK_PIN;
 	GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
 	GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
-	GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+ 	GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
 	GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
 	LL_GPIO_Init(CLK_GPIO_PORT, &GPIO_InitStruct);
 }
