@@ -512,6 +512,10 @@ void TIM7_IRQHandler(void)
 			UpdateDisplay();
 			time--;
 		}
+		else
+		{
+			TM1637_SetBrightness(0);
+		}
 
 	}
 }
@@ -521,8 +525,14 @@ void UpdateDisplay()
 	uint32_t displayData = 0;
 	if(time<0 && time>= DISPLAY_BLINK_TIME*-2)
 	{
-		TM1637_SetBrightness((time%2)*8);
-		TM1637_DisplayDecimal(0,1);
+		if(time%2!=0)
+		{
+			dziala();
+		}
+		else
+		{
+			TM1637_DisplayDecimal(displayData,1);
+		}
 	  	return;
 	}
 	displayData = floor(time/60)*100+time%60;

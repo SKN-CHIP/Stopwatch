@@ -43,13 +43,14 @@ extern "C" {
 #include "stm32l4xx_ll_tim.h"
 #include "stm32l4xx_ll_gpio.h"
 
+
 #if defined(USE_FULL_ASSERT)
 #include "stm32_assert.h"
 #endif /* USE_FULL_ASSERT */
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "stm32l4xx_ll_usart.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

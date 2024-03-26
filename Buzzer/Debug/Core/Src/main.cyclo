@@ -55,5 +55,5 @@
 ../Core/Src/main.c:451:6:Reset_LED	2
 ../Core/Src/main.c:461:6:LedTest	9
 ../Core/Src/main.c:504:6:TIM7_IRQHandler	3
-../Core/Src/main.c:519:6:UpdateDisplay	3
-../Core/Src/main.c:537:6:Error_Handler	1
+../Core/Src/main.c:523:6:UpdateDisplay	4
+../Core/Src/main.c:547:6:Error_Handler	1
