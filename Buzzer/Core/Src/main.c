@@ -65,7 +65,7 @@ static void MX_TIM6_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_TIM7_Init(void);
 /* USER CODE BEGIN PFP */
-void Buzz_Buzz(int czas, int ile, int* Buzz);
+void Buzz_Buzz(int czas, int ile, int* Buzz, int* Buzz_Check);
 void Buzz_Buzz_Up(int* Buzz_Check);
 void Damian_Marudzi(uint32_t czas);
 void WS2812_Send (void);
@@ -89,7 +89,7 @@ void AutomaticLedMode(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  int Buzz_Check = 0, Buzz = 0;
+  int* Buzz_Check = 0, Buzz = 0;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -568,23 +568,24 @@ void UpdateDisplay()
 	TM1637_DisplayDecimal(displayData,1);
 }
 
-void Buzz_Buzz(int czas, int ile, int* Buzz, int* Buzz_Check){
-	if((&Buzz == 0) & (&Buzz_Check == 1)){
-		&Buzz = ile*2;
+void Buzz_Buzz(int czas, int ile, int* Buzz, int* Buzz_Check)
+{
+	if((*Buzz == 0) & (*Buzz_Check == 1)){
+		*Buzz = ile*2;
 		LL_TIM_SetAutoReload(TIM6, czas/2 - 1);
 	}
 	if((&Buzz > 0) & (&Buzz_Check == 1) & (LL_TIM_IsActiveFlag_UPDATE(TIM6) == 1)){
 			LL_TIM_GenerateEvent_UPDATE(TIM6);
 			LL_TIM_ClearFlag_UPDATE(TIM6);
 			LL_GPIO_TogglePin(Buzz_Buzz_GPIO_Port, Buzz_Buzz_Pin);
-			&Buzz = &Buzz - 1;
-			if(&Buzz == 0){
-				&Buzz_Check = 0;
+			Buzz = Buzz - 1;
+			if(*Buzz == 0){
+				Buzz_Check = 0;
 			}
 	}
 }
 void Buzz_Buzz_Up(int* Buzz_Check){
-	&Buzz_Check = 1;
+	*Buzz_Check = 1;
 }
 /* USER CODE END 4 */
 
