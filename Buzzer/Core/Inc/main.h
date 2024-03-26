@@ -43,7 +43,6 @@ extern "C" {
 #include "stm32l4xx_ll_tim.h"
 #include "stm32l4xx_ll_gpio.h"
 
-
 #if defined(USE_FULL_ASSERT)
 #include "stm32_assert.h"
 #endif /* USE_FULL_ASSERT */
@@ -78,8 +77,8 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define test_Pin LL_GPIO_PIN_5
 #define test_GPIO_Port GPIOA
-#define Led_Pin LL_GPIO_PIN_7
-#define Led_GPIO_Port GPIOC
+#define Led_Pin LL_GPIO_PIN_6
+#define Led_GPIO_Port GPIOB
 #ifndef NVIC_PRIORITYGROUP_0
 #define NVIC_PRIORITYGROUP_0         ((uint32_t)0x00000007) /*!< 0 bit  for pre-emption priority,
                                                                  4 bits for subpriority */
