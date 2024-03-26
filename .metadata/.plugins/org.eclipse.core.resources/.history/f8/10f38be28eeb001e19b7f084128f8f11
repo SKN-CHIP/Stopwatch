@@ -89,7 +89,7 @@ void AutomaticLedMode(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  int Buzz_Check = 0, Buzz = 0;
+  int Buzz_check = 0, Buzz = 0;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -141,7 +141,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  	Buzz_Buzz(500, 2, Buzz, Buzz_Check);
+  	Buzz_Buzz(500, 2, Buzz);
 
 
   }
@@ -577,7 +577,7 @@ void Buzz_Buzz(int czas, int ile, int* Buzz, int* Buzz_Check){
 			LL_TIM_GenerateEvent_UPDATE(TIM6);
 			LL_TIM_ClearFlag_UPDATE(TIM6);
 			LL_GPIO_TogglePin(Buzz_Buzz_GPIO_Port, Buzz_Buzz_Pin);
-			&Buzz = &Buzz - 1;
+			&Buzz--;
 			if(&Buzz == 0){
 				&Buzz_Check = 0;
 			}

@@ -577,7 +577,7 @@ void Buzz_Buzz(int czas, int ile, int* Buzz, int* Buzz_Check){
 			LL_TIM_GenerateEvent_UPDATE(TIM6);
 			LL_TIM_ClearFlag_UPDATE(TIM6);
 			LL_GPIO_TogglePin(Buzz_Buzz_GPIO_Port, Buzz_Buzz_Pin);
-			&Buzz = &Buzz - 1;
+			&Buzz = &Buzz -1;
 			if(&Buzz == 0){
 				&Buzz_Check = 0;
 			}
