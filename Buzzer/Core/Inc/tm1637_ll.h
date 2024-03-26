@@ -21,4 +21,5 @@ void TM1637_ClkHigh(void);
 void TM1637_ClkLow(void);
 void TM1637_DataHigh(void);
 void TM1637_DATALow(void);
+void dziala(void);
 #endif /* TM1637_H_ */
