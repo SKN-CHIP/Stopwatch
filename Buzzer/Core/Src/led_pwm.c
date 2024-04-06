@@ -23,8 +23,7 @@ void generate_signal(uint8_t* data, uint32_t data_length){
 }
 
 
-void dma_init(void)
-{
+void dma_init(void){
   LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA1);
   NVIC_SetPriority(DMA1_Channel6_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),0, 0));
   NVIC_EnableIRQ(DMA1_Channel6_IRQn);
@@ -42,11 +41,8 @@ void dma_init(void)
 
 }
 
-void DMA1_Channel6_IRQHandler(void)
-{
-
-	if(LL_DMA_IsActiveFlag_TC6(DMA1) == 1)
-	{
+void DMA1_Channel6_IRQHandler(void){
+	if(LL_DMA_IsActiveFlag_TC6(DMA1) == 1){
 		LL_DMA_ClearFlag_TC6(DMA1);
 		LL_DMA_DisableChannel(DMA1, LL_DMA_CHANNEL_6);
 		LL_DMA_DisableIT_TC(DMA1, LL_DMA_CHANNEL_6);

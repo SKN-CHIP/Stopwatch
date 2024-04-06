@@ -12,9 +12,8 @@
 
 void enable_timer3(void);
 
-void generate_signal(uint16_t* data, uint32_t data_length);
+void generate_signal(uint8_t* data, uint32_t data_length);
 
 void dma_init(void);
-
 
 #endif /* INC_LED_PWM_H_ */

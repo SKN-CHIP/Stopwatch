@@ -9,6 +9,14 @@
 #define INC_COMMUNICATION_H_
 #include "main.h"
 
+struct bluetooth_data{
+	uint8_t device_address; // 1 - timer; 2 - diodes; 3 - flags
+	uint8_t value1; //minutes, diode number, flag state
+	uint8_t value2; //seconds, diode color
+	uint8_t check_sum;
+	uint8_t flag;
+};
+
 void usart1_init(void);
 void usart2_init(void);
 void usart_transmit(USART_TypeDef *USARTx, uint8_t text[]);

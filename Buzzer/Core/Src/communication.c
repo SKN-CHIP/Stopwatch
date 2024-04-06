@@ -7,19 +7,23 @@
 #include "main.h"
 #include "stdio.h"
 #include "string.h"
+#include "communication.h"
 
 #define LINE_MAX_LENGTH 50
 #define ASCII_OFFSET 48
 
-struct bluetooth_data{
-	uint8_t device_address; // 1 - timer; 2 - diodes; 3 - flags
-	uint8_t value1; //minutes, diode number, flag state
-	uint8_t value2; //seconds, diode color
-	uint8_t check_sum;
-};
+int _write(int file, uint8_t *buf, int nbytes){
+  uint8_t num_of_byte = 0;
+  while (num_of_byte <= nbytes - 1){
+    while (!LL_USART_IsActiveFlag_TXE(USART2));
+    LL_USART_TransmitData8(USART2, buf[num_of_byte++]);
+  }
+  while (!LL_USART_IsActiveFlag_TC(USART2));
+  return nbytes;
+}
 
 void decompose_data(uint8_t message[], uint8_t length){
-	struct bluetooth_data data = {0};
+	extern struct bluetooth_data data;
 	data.check_sum = (message[length - 1] - ASCII_OFFSET) * 10; //48 = ASCII offset
 	data.check_sum += message[length] - ASCII_OFFSET;
 	uint8_t sum = 0;
@@ -41,10 +45,12 @@ void decompose_data(uint8_t message[], uint8_t length){
 	}
 	else if(data.device_address == 3){
 		data.value1 = message[1] - ASCII_OFFSET;
+		data.value2 = message[2] - ASCII_OFFSET;
 	}
 	else {
 		return;
 	}
+	data.flag = 1;
 }
 
 
@@ -56,8 +62,7 @@ static void usart_append(uint8_t value){
 	if(value == '\r')
 		return;
 
-	if(value == '\n')
-	{
+	if(value == '\n'){
 		line_buffer_usart[line_length_usart] = '\0';
 		printf("Received: %s\r\n", line_buffer_usart);
 		decompose_data((uint8_t*)line_buffer_usart, line_length_usart-1);
