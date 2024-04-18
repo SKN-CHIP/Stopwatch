@@ -24,11 +24,12 @@
 #include "led_pwm.h"
 #include "tm1637_ll.h"
 #include "math.h"
+#include "communication.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+struct bluetooth_data data;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -134,13 +135,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-  	if(time>0)
-  	{
-  		AutomaticLedMode();
-  	}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+  	Buzz_Buzz_Up(Buzz_Check);
   	Buzz_Buzz(500, 2, Buzz, Buzz_Check);
 
 

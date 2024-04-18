@@ -27,4 +27,4 @@
 ../Core/Src/led_pwm.c:9:6:enable_timer3	8	static
 ../Core/Src/led_pwm.c:17:6:generate_signal	24	static
 ../Core/Src/led_pwm.c:26:6:dma_init	8	static
-../Core/Src/led_pwm.c:45:6:DMA1_Channel6_IRQHandler	8	static
+../Core/Src/led_pwm.c:44:6:DMA1_Channel6_IRQHandler	8	static
