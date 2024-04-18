@@ -25,6 +25,7 @@
 #include "tm1637_ll.h"
 #include "math.h"
 #include "communication.h"
+#include "led_set.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,10 +52,6 @@ struct bluetooth_data data;
 
 /* USER CODE BEGIN PV */
 
-uint8_t LED_Data[MAX_LED][4];
-uint8_t LED_Mod[MAX_LED][4];
-uint16_t pwmData[50+(24*MAX_LED)+50];
-
 int32_t time;
 
 /* USER CODE END PV */
@@ -69,13 +66,10 @@ static void MX_TIM7_Init(void);
 void Buzz_Buzz(int czas, int ile, int* Buzz, int* Buzz_Check);
 void Buzz_Buzz_Up(int* Buzz_Check);
 void Damian_Marudzi(uint32_t czas);
-void WS2812_Send (void);
-void Set_LED (int LEDnum, int Red, int Green, int Blue);
-void Set_Brightness (int brightness);
-void LedTest(int mode);
+void LedTest(int mode,struct led_data* data);
 void UpdateDisplay();
 void LedStart(void);
-void AutomaticLedMode(void);
+void AutomaticLedMode(struct led_data* data);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -91,6 +85,7 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
   int* Buzz_Check = 0, Buzz = 0;
+  struct led_data ledData;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -112,7 +107,7 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
-  /* USER CODE BEGIN SysInit */
+  /* USER CO_DE BEGIN SysInit */
 
   /* USER CODE END SysInit */
 
@@ -128,7 +123,8 @@ int main(void)
   	  TM1637_gpio_init();
   	  TM1637_Init();
   	  TM1637_SetBrightness(8);
-  	  LedStart();
+  	  usart1_init();
+  	  //LedTest(1, &ledData);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -140,7 +136,10 @@ int main(void)
     /* USER CODE BEGIN 3 */
   	Buzz_Buzz_Up(Buzz_Check);
   	Buzz_Buzz(500, 2, Buzz, Buzz_Check);
-
+  	if(data.flag == 0)
+  	{
+  		AutomaticLedMode(&ledData);
+  	}
 
   }
   /* USER CODE END 3 */
@@ -383,148 +382,59 @@ void Damian_Marudzi(uint32_t czas)
 	LL_TIM_SetAutoReload(TIM6, czas);
 	while(LL_TIM_IsActiveFlag_UPDATE(TIM6) == 0);
 }
-void WS2812_Send (void)
-{
-	uint32_t indx=0;
-	uint32_t color;
-	Set_Brightness(2);
-
-	for (int i=0; i<50; i++)
-	{
-		pwmData[indx] = 0;
-		indx++;
-	}
-
-	for (int i= 0; i<MAX_LED; i++)
-	{
-#if USE_BRIGHTNESS
-		color = ((LED_Mod[i][1]<<16) | (LED_Mod[i][2]<<8) | (LED_Mod[i][3]));
-#else
-		color = ((LED_Data[i][1]<<16) | (LED_Data[i][2]<<8) | (LED_Data[i][3]));
-#endif
-
-		for (int i=23; i>=0; i--)
-		{
-			if (color&(1<<i))
-			{
-				pwmData[indx] = 27;  // 2/3 of 90
-			}
-
-			else pwmData[indx] = 13;  // 1/3 of 90
-
-			indx++;
-		}
-
-	}
-
-	for (int i=0; i<50; i++)
-	{
-		pwmData[indx] = 0;
-		indx++;
-	}
-
-	generate_signal(pwmData,sizeof(pwmData));
-}
-void Set_Brightness (int brightness)  // 0-45
-{
-#if USE_BRIGHTNESS
-
-	if (brightness > 45) brightness = 45;
-	for (int i=0; i<MAX_LED; i++)
-	{
-		LED_Mod[i][0] = LED_Data[i][0];
-		for (int j=1; j<4; j++)
-		{
-			float angle = 90-brightness;  // in degrees
-			angle = angle*PI / 180;  // in rad
-			LED_Mod[i][j] = (LED_Data[i][j])/(tan(angle));
-		}
-	}
-
-#endif
-
-}
-void Set_LED (int LEDnum, int Red, int Green, int Blue)
-{
-	LED_Data[LEDnum][0] = LEDnum;
-	LED_Data[LEDnum][1] = Green;
-	LED_Data[LEDnum][2] = Red;
-	LED_Data[LEDnum][3] = Blue;
-}
-void Reset_LED (void)
-{
-	for (int i=0; i<MAX_LED; i++)
-	{
-		LED_Data[i][0] = i;
-		LED_Data[i][1] = 0;
-		LED_Data[i][2] = 0;
-		LED_Data[i][3] = 0;
-	}
-}
-void LedTest(int mode)
+void LedTest(int mode,struct led_data* data)
 {
 
 	switch(mode)
 	{
 		case 1:
-			Set_LED(0, 255, 0, 0);
-			Set_LED(1, 0, 255, 0);
-			Set_LED(2, 0, 0, 255);
-			Set_LED(3, 255, 0, 0);
-			Set_LED(4, 0, 255, 0);
-			Set_LED(5, 0, 0, 255);
-			Set_LED(6, 255, 0, 191);
-			Set_LED(7, 255, 255, 0);
-			WS2812_Send();
+			Set_LED(data,0, 255, 0, 0);
+			Set_LED(data,1, 0, 255, 0);
+			Set_LED(data,2, 0, 0, 255);
+			Set_LED(data,3, 255, 0, 0);
+			Set_LED(data,4, 0, 255, 0);
+			Set_LED(data,5, 0, 0, 255);
+			Set_LED(data,6, 255, 0, 191);
+			Set_LED(data,7, 255, 255, 0);
+			WS2812_Send(data,STANDARD_BRIGHTNESS);
 		break;
 		case 2:
-			Reset_LED();
+			Reset_LED(data);
 			for(int i=0; i< MAX_LED; i++)
 			{
 				if(i!=0)
 				{
-					Set_LED(i-1, 0, 0, 0);
+					Set_LED(data,i-1, 0, 0, 0);
 				}
 				switch(i%3)
 				{
 					case 0:
-						Set_LED(i, 255, 0, 0);
+						Set_LED(data,i, 255, 0, 0);
 						break;
 					case 1:
-						Set_LED(i, 0, 255, 0);
+						Set_LED(data,i, 0, 255, 0);
 					break;
 					case 2:
-						Set_LED(i, 0, 0, 255);
+						Set_LED(data,i, 0, 0, 255);
 					break;
 				}
-				WS2812_Send();
+				WS2812_Send(data,STANDARD_BRIGHTNESS);
 				Damian_Marudzi(50000000);
 			}
 		break;
 	}
 }
-void LedStart(void)
+void AutomaticLedMode(struct led_data* data)
 {
-	Set_LED(0, 0, 0, 255);
-	Set_LED(1, 0, 0, 255);
-	Set_LED(2, 0, 0, 255);
-	Set_LED(3, 0, 0, 255);
-	Set_LED(4, 0, 0, 255);
-	Set_LED(5, 0, 0, 255);
-	Set_LED(6, 0, 0, 255);
-	WS2812_Send();
-}
-void AutomaticLedMode(void)
-{
-	Reset_LED();
+	Reset_LED(data);
 	for(int i=0; i< MAX_LED; i++)
 	{
 		if(i!=0)
 		{
-			Set_LED(i-1, 0, 0, 0);
+			Set_LED(data,i-1, 0, 0, 0);
 		}
-		Set_LED(i, 0, 0, 255);
-		WS2812_Send();
+		Set_LED(data,i, 0, 0, 255);
+		WS2812_Send(data,STANDARD_BRIGHTNESS);
 		Damian_Marudzi(50000000);
 	}
 }
