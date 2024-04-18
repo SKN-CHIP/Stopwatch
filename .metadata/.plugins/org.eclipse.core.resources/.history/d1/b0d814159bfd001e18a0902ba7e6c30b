@@ -1,0 +1,676 @@
+/* USER CODE BEGIN Header */
+/**
+  ******************************************************************************
+  * @file           : main.c
+  * @brief          : Main program body
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2024 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
+/* USER CODE END Header */
+/* Includes ------------------------------------------------------------------*/
+#include "main.h"
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
+#include "led_pwm.h"
+#include "tm1637_ll.h"
+#include "math.h"
+#include "communication.h"
+/* USER CODE END Includes */
+
+/* Private typedef -----------------------------------------------------------*/
+/* USER CODE BEGIN PTD */
+struct bluetooth_data data;
+/* USER CODE END PTD */
+
+/* Private define ------------------------------------------------------------*/
+/* USER CODE BEGIN PD */
+	#define MAX_LED 8
+	#define PI 3.14159265
+	#define USE_BRIGHTNESS 1
+	#define START_TIME 15
+	#define DISPLAY_BLINK_TIME 3
+
+/* USER CODE END PD */
+
+/* Private macro -------------------------------------------------------------*/
+/* USER CODE BEGIN PM */
+
+/* USER CODE END PM */
+
+/* Private variables ---------------------------------------------------------*/
+
+/* USER CODE BEGIN PV */
+
+uint8_t LED_Data[MAX_LED][4];
+uint8_t LED_Mod[MAX_LED][4];
+uint16_t pwmData[50+(24*MAX_LED)+50];
+
+int32_t time;
+
+/* USER CODE END PV */
+
+/* Private function prototypes -----------------------------------------------*/
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_TIM6_Init(void);
+static void MX_TIM3_Init(void);
+static void MX_TIM7_Init(void);
+static void MX_USART2_UART_Init(void);
+/* USER CODE BEGIN PFP */
+void Buzz_Buzz(int czas, int ile, int* Buzz, int* Buzz_Check);
+void Buzz_Buzz_Up(int* Buzz_Check);
+void Damian_Marudzi(uint32_t czas);
+void WS2812_Send (void);
+void Set_LED (int LEDnum, int Red, int Green, int Blue);
+void Set_Brightness (int brightness);
+void LedTest(int mode);
+void UpdateDisplay();
+void LedStart(void);
+void AutomaticLedMode(void);
+/* USER CODE END PFP */
+
+/* Private user code ---------------------------------------------------------*/
+/* USER CODE BEGIN 0 */
+
+/* USER CODE END 0 */
+
+/**
+  * @brief  The application entry point.
+  * @retval int
+  */
+int main(void)
+{
+  /* USER CODE BEGIN 1 */
+  int Buzz_Check = 0, Buzz = 0;
+  /* USER CODE END 1 */
+
+  /* MCU Configuration--------------------------------------------------------*/
+
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_SYSCFG);
+  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_PWR);
+
+  /* System interrupt init*/
+  NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
+
+  /* SysTick_IRQn interrupt configuration */
+  NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),15, 0));
+
+  /* USER CODE BEGIN Init */
+
+  /* USER CODE END Init */
+
+  /* Configure the system clock */
+  SystemClock_Config();
+
+  /* USER CODE BEGIN SysInit */
+
+  /* USER CODE END SysInit */
+
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_TIM6_Init();
+  MX_TIM3_Init();
+  MX_TIM7_Init();
+  MX_USART2_UART_Init();
+  /* USER CODE BEGIN 2 */
+  	  time = START_TIME;
+  	  dma_init();
+  	  enable_timer3();
+  	  TM1637_gpio_init();
+  	  TM1637_Init();
+  	  TM1637_SetBrightness(8);
+  	  LedStart();
+  /* USER CODE END 2 */
+
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
+  while (1)
+  {
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+  	Buzz_Buzz_Up(Buzz_Check);
+  	Buzz_Buzz(500, 2, &Buzz, &Buzz_Check);
+  	LL_mDelay(500);
+
+
+  }
+  /* USER CODE END 3 */
+}
+
+/**
+  * @brief System Clock Configuration
+  * @retval None
+  */
+void SystemClock_Config(void)
+{
+  LL_FLASH_SetLatency(LL_FLASH_LATENCY_1);
+  while(LL_FLASH_GetLatency()!= LL_FLASH_LATENCY_1)
+  {
+  }
+  LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE1);
+  while (LL_PWR_IsActiveFlag_VOS() != 0)
+  {
+  }
+  LL_RCC_MSI_Enable();
+
+   /* Wait till MSI is ready */
+  while(LL_RCC_MSI_IsReady() != 1)
+  {
+
+  }
+  LL_RCC_MSI_EnableRangeSelection();
+  LL_RCC_MSI_SetRange(LL_RCC_MSIRANGE_6);
+  LL_RCC_MSI_SetCalibTrimming(0);
+  LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_MSI, LL_RCC_PLLM_DIV_1, 16, LL_RCC_PLLR_DIV_2);
+  LL_RCC_PLL_EnableDomain_SYS();
+  LL_RCC_PLL_Enable();
+
+   /* Wait till PLL is ready */
+  while(LL_RCC_PLL_IsReady() != 1)
+  {
+
+  }
+  LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_PLL);
+
+   /* Wait till System clock is ready */
+  while(LL_RCC_GetSysClkSource() != LL_RCC_SYS_CLKSOURCE_STATUS_PLL)
+  {
+
+  }
+  LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
+  LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_1);
+  LL_RCC_SetAPB2Prescaler(LL_RCC_APB2_DIV_2);
+
+  LL_Init1msTick(32000000);
+
+  LL_SetSystemCoreClock(32000000);
+}
+
+/**
+  * @brief TIM3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM3_Init(void)
+{
+
+  /* USER CODE BEGIN TIM3_Init 0 */
+
+  /* USER CODE END TIM3_Init 0 */
+
+  LL_TIM_InitTypeDef TIM_InitStruct = {0};
+  LL_TIM_OC_InitTypeDef TIM_OC_InitStruct = {0};
+
+  LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  /* Peripheral clock enable */
+  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM3);
+
+  /* USER CODE BEGIN TIM3_Init 1 */
+
+  /* USER CODE END TIM3_Init 1 */
+  TIM_InitStruct.Prescaler = 0;
+  TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
+  TIM_InitStruct.Autoreload = 32-LL_TIM_IC_FILTER_FDIV1_N2;
+  TIM_InitStruct.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1;
+  LL_TIM_Init(TIM3, &TIM_InitStruct);
+  LL_TIM_DisableARRPreload(TIM3);
+  LL_TIM_SetClockSource(TIM3, LL_TIM_CLOCKSOURCE_INTERNAL);
+  LL_TIM_OC_EnablePreload(TIM3, LL_TIM_CHANNEL_CH1);
+  TIM_OC_InitStruct.OCMode = LL_TIM_OCMODE_PWM1;
+  TIM_OC_InitStruct.OCState = LL_TIM_OCSTATE_DISABLE;
+  TIM_OC_InitStruct.OCNState = LL_TIM_OCSTATE_DISABLE;
+  TIM_OC_InitStruct.CompareValue = 0;
+  TIM_OC_InitStruct.OCPolarity = LL_TIM_OCPOLARITY_HIGH;
+  LL_TIM_OC_Init(TIM3, LL_TIM_CHANNEL_CH1, &TIM_OC_InitStruct);
+  LL_TIM_OC_DisableFast(TIM3, LL_TIM_CHANNEL_CH1);
+  LL_TIM_SetOCRefClearInputSource(TIM3, LL_TIM_OCREF_CLR_INT_NC);
+  LL_TIM_DisableExternalClock(TIM3);
+  LL_TIM_ConfigETR(TIM3, LL_TIM_ETR_POLARITY_NONINVERTED, LL_TIM_ETR_PRESCALER_DIV1, LL_TIM_ETR_FILTER_FDIV1);
+  LL_TIM_SetTriggerOutput(TIM3, LL_TIM_TRGO_RESET);
+  LL_TIM_DisableMasterSlaveMode(TIM3);
+  /* USER CODE BEGIN TIM3_Init 2 */
+
+  /* USER CODE END TIM3_Init 2 */
+  LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOA);
+  /**TIM3 GPIO Configuration
+  PA6   ------> TIM3_CH1
+  */
+  GPIO_InitStruct.Pin = LL_GPIO_PIN_6;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  GPIO_InitStruct.Alternate = LL_GPIO_AF_2;
+  LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+}
+
+/**
+  * @brief TIM6 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM6_Init(void)
+{
+
+  /* USER CODE BEGIN TIM6_Init 0 */
+
+  /* USER CODE END TIM6_Init 0 */
+
+  LL_TIM_InitTypeDef TIM_InitStruct = {0};
+
+  /* Peripheral clock enable */
+  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM6);
+
+  /* USER CODE BEGIN TIM6_Init 1 */
+
+  /* USER CODE END TIM6_Init 1 */
+  TIM_InitStruct.Prescaler = 31;
+  TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
+  TIM_InitStruct.Autoreload = 65535;
+  LL_TIM_Init(TIM6, &TIM_InitStruct);
+  LL_TIM_DisableARRPreload(TIM6);
+  LL_TIM_SetTriggerOutput(TIM6, LL_TIM_TRGO_RESET);
+  LL_TIM_DisableMasterSlaveMode(TIM6);
+  /* USER CODE BEGIN TIM6_Init 2 */
+ // LL_TIM_SetClockSource(TIM6, LL_TIM_CLOCKSOURCE_INTERNAL);
+  LL_TIM_SetCounterMode(TIM6, LL_TIM_COUNTERMODE_UP);
+  LL_TIM_ClearFlag_UPDATE(TIM6);
+  LL_TIM_EnableCounter(TIM6);
+
+  /* USER CODE END TIM6_Init 2 */
+
+}
+
+/**
+  * @brief TIM7 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM7_Init(void)
+{
+
+  /* USER CODE BEGIN TIM7_Init 0 */
+
+  /* USER CODE END TIM7_Init 0 */
+
+  LL_TIM_InitTypeDef TIM_InitStruct = {0};
+
+  /* Peripheral clock enable */
+  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM7);
+
+  /* USER CODE BEGIN TIM7_Init 1 */
+
+  /* USER CODE END TIM7_Init 1 */
+  TIM_InitStruct.Prescaler = 32000-LL_TIM_IC_FILTER_FDIV1_N2;
+  TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
+  TIM_InitStruct.Autoreload = 1000-LL_TIM_IC_FILTER_FDIV1_N2;
+  LL_TIM_Init(TIM7, &TIM_InitStruct);
+  LL_TIM_DisableARRPreload(TIM7);
+  LL_TIM_SetTriggerOutput(TIM7, LL_TIM_TRGO_RESET);
+  LL_TIM_DisableMasterSlaveMode(TIM7);
+  /* USER CODE BEGIN TIM7_Init 2 */
+
+  LL_TIM_SetCounterMode(TIM7, LL_TIM_COUNTERMODE_UP);
+  LL_TIM_GenerateEvent_UPDATE(TIM7);
+  LL_TIM_ClearFlag_UPDATE(TIM7);
+  NVIC_SetPriority(TIM7_IRQn, 0);
+  NVIC_EnableIRQ(TIM7_IRQn);
+  LL_TIM_EnableIT_UPDATE(TIM7);
+  LL_TIM_EnableCounter(TIM7);
+  /* USER CODE END TIM7_Init 2 */
+
+}
+
+/**
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART2_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART2_Init 0 */
+
+  /* USER CODE END USART2_Init 0 */
+
+  LL_USART_InitTypeDef USART_InitStruct = {0};
+
+  LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  LL_RCC_SetUSARTClockSource(LL_RCC_USART2_CLKSOURCE_PCLK1);
+
+  /* Peripheral clock enable */
+  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_USART2);
+
+  LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOA);
+  /**USART2 GPIO Configuration
+  PA2   ------> USART2_TX
+  PA3   ------> USART2_RX
+  */
+  GPIO_InitStruct.Pin = LL_GPIO_PIN_2|LL_GPIO_PIN_3;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  GPIO_InitStruct.Alternate = LL_GPIO_AF_7;
+  LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /* USER CODE BEGIN USART2_Init 1 */
+
+  /* USER CODE END USART2_Init 1 */
+  USART_InitStruct.BaudRate = 115200;
+  USART_InitStruct.DataWidth = LL_USART_DATAWIDTH_8B;
+  USART_InitStruct.StopBits = LL_USART_STOPBITS_1;
+  USART_InitStruct.Parity = LL_USART_PARITY_NONE;
+  USART_InitStruct.TransferDirection = LL_USART_DIRECTION_TX_RX;
+  USART_InitStruct.HardwareFlowControl = LL_USART_HWCONTROL_NONE;
+  USART_InitStruct.OverSampling = LL_USART_OVERSAMPLING_16;
+  LL_USART_Init(USART2, &USART_InitStruct);
+  LL_USART_ConfigAsyncMode(USART2);
+  LL_USART_Enable(USART2);
+  /* USER CODE BEGIN USART2_Init 2 */
+
+  /* USER CODE END USART2_Init 2 */
+
+}
+
+/**
+  * @brief GPIO Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_GPIO_Init(void)
+{
+  LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
+/* USER CODE BEGIN MX_GPIO_Init_1 */
+/* USER CODE END MX_GPIO_Init_1 */
+
+  /* GPIO Ports Clock Enable */
+  LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOH);
+  LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOA);
+  LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOB);
+
+  /**/
+  LL_GPIO_ResetOutputPin(GPIOA, test_Pin|Buzz_Buzz_Pin);
+
+  /**/
+  LL_GPIO_ResetOutputPin(Led_GPIO_Port, Led_Pin);
+
+  /**/
+  GPIO_InitStruct.Pin = test_Pin|Buzz_Buzz_Pin;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /**/
+  GPIO_InitStruct.Pin = Led_Pin;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  LL_GPIO_Init(Led_GPIO_Port, &GPIO_InitStruct);
+
+/* USER CODE BEGIN MX_GPIO_Init_2 */
+/* USER CODE END MX_GPIO_Init_2 */
+}
+
+/* USER CODE BEGIN 4 */
+
+void Damian_Marudzi(uint32_t czas)
+{
+	LL_TIM_GenerateEvent_UPDATE(TIM6);
+	LL_TIM_ClearFlag_UPDATE(TIM6);
+	LL_TIM_SetAutoReload(TIM6, czas);
+	while(LL_TIM_IsActiveFlag_UPDATE(TIM6) == 0);
+}
+void WS2812_Send (void)
+{
+	uint32_t indx=0;
+	uint32_t color;
+	Set_Brightness(2);
+
+	for (int i=0; i<50; i++)
+	{
+		pwmData[indx] = 0;
+		indx++;
+	}
+
+	for (int i= 0; i<MAX_LED; i++)
+	{
+#if USE_BRIGHTNESS
+		color = ((LED_Mod[i][1]<<16) | (LED_Mod[i][2]<<8) | (LED_Mod[i][3]));
+#else
+		color = ((LED_Data[i][1]<<16) | (LED_Data[i][2]<<8) | (LED_Data[i][3]));
+#endif
+
+		for (int i=23; i>=0; i--)
+		{
+			if (color&(1<<i))
+			{
+				pwmData[indx] = 27;  // 2/3 of 90
+			}
+
+			else pwmData[indx] = 13;  // 1/3 of 90
+
+			indx++;
+		}
+
+	}
+
+	for (int i=0; i<50; i++)
+	{
+		pwmData[indx] = 0;
+		indx++;
+	}
+
+	generate_signal(pwmData,sizeof(pwmData));
+}
+void Set_Brightness (int brightness)  // 0-45
+{
+#if USE_BRIGHTNESS
+
+	if (brightness > 45) brightness = 45;
+	for (int i=0; i<MAX_LED; i++)
+	{
+		LED_Mod[i][0] = LED_Data[i][0];
+		for (int j=1; j<4; j++)
+		{
+			float angle = 90-brightness;  // in degrees
+			angle = angle*PI / 180;  // in rad
+			LED_Mod[i][j] = (LED_Data[i][j])/(tan(angle));
+		}
+	}
+
+#endif
+
+}
+void Set_LED (int LEDnum, int Red, int Green, int Blue)
+{
+	LED_Data[LEDnum][0] = LEDnum;
+	LED_Data[LEDnum][1] = Green;
+	LED_Data[LEDnum][2] = Red;
+	LED_Data[LEDnum][3] = Blue;
+}
+void Reset_LED (void)
+{
+	for (int i=0; i<MAX_LED; i++)
+	{
+		LED_Data[i][0] = i;
+		LED_Data[i][1] = 0;
+		LED_Data[i][2] = 0;
+		LED_Data[i][3] = 0;
+	}
+}
+void LedTest(int mode)
+{
+
+	switch(mode)
+	{
+		case 1:
+			Set_LED(0, 255, 0, 0);
+			Set_LED(1, 0, 255, 0);
+			Set_LED(2, 0, 0, 255);
+			Set_LED(3, 255, 0, 0);
+			Set_LED(4, 0, 255, 0);
+			Set_LED(5, 0, 0, 255);
+			Set_LED(6, 255, 0, 191);
+			Set_LED(7, 255, 255, 0);
+			WS2812_Send();
+		break;
+		case 2:
+			Reset_LED();
+			for(int i=0; i< MAX_LED; i++)
+			{
+				if(i!=0)
+				{
+					Set_LED(i-1, 0, 0, 0);
+				}
+				switch(i%3)
+				{
+					case 0:
+						Set_LED(i, 255, 0, 0);
+						break;
+					case 1:
+						Set_LED(i, 0, 255, 0);
+					break;
+					case 2:
+						Set_LED(i, 0, 0, 255);
+					break;
+				}
+				WS2812_Send();
+				Damian_Marudzi(50000000);
+			}
+		break;
+	}
+}
+void LedStart(void)
+{
+	Set_LED(0, 0, 0, 255);
+	Set_LED(1, 0, 0, 255);
+	Set_LED(2, 0, 0, 255);
+	Set_LED(3, 0, 0, 255);
+	Set_LED(4, 0, 0, 255);
+	Set_LED(5, 0, 0, 255);
+	Set_LED(6, 0, 0, 255);
+	WS2812_Send();
+}
+void AutomaticLedMode(void)
+{
+	Reset_LED();
+	for(int i=0; i< MAX_LED; i++)
+	{
+		if(i!=0)
+		{
+			Set_LED(i-1, 0, 0, 0);
+		}
+		Set_LED(i, 0, 0, 255);
+		WS2812_Send();
+		Damian_Marudzi(50000000);
+	}
+}
+void TIM7_IRQHandler(void)
+{
+	if(LL_TIM_IsActiveFlag_UPDATE(TIM7) == 1)
+	{
+		LL_GPIO_TogglePin(test_GPIO_Port, test_Pin);
+		LL_TIM_ClearFlag_UPDATE(TIM7);
+		if(time>= DISPLAY_BLINK_TIME*-2)
+		{
+			UpdateDisplay();
+			time--;
+		}
+		else
+		{
+			TM1637_SetBrightness(0);
+		}
+
+	}
+}
+
+void UpdateDisplay()
+{
+	uint32_t displayData = 0;
+	if(time<0 && time>= DISPLAY_BLINK_TIME*-2)
+	{
+		if(time%2!=0)
+		{
+			dziala();
+		}
+		else
+		{
+			TM1637_DisplayDecimal(displayData,1);
+		}
+	  	return;
+	}
+	displayData = floor(time/60)*100+time%60;
+	TM1637_DisplayDecimal(displayData,1);
+}
+
+void Buzz_Buzz(int czas, int ile, int* Buzz, int* Buzz_Check)
+{
+	if((*Buzz == 0) && (*Buzz_Check == 1)){
+		*Buzz = ile*2;
+		LL_TIM_SetAutoReload(TIM6, czas/2 - 1);
+	}
+	if((*Buzz > 0) && (*Buzz_Check == 1) && (LL_TIM_IsActiveFlag_UPDATE(TIM6) == 1)){
+			LL_TIM_GenerateEvent_UPDATE(TIM6);
+			LL_TIM_ClearFlag_UPDATE(TIM6);
+			LL_GPIO_TogglePin(Buzz_Buzz_GPIO_Port, Buzz_Buzz_Pin);
+			*Buzz = *Buzz - 1;
+			if(*Buzz == 0){
+				*Buzz_Check = 0;
+			}
+	}
+}
+void Buzz_Buzz_Up(int* Buzz_Check){
+	*Buzz_Check = 1;
+}
+/* USER CODE END 4 */
+
+/**
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
+void Error_Handler(void)
+{
+  /* USER CODE BEGIN Error_Handler_Debug */
+  /* User can add his own implementation to report the HAL error return state */
+  __disable_irq();
+  while (1)
+  {
+  }
+  /* USER CODE END Error_Handler_Debug */
+}
+
+#ifdef  USE_FULL_ASSERT
+/**
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
+void assert_failed(uint8_t *file, uint32_t line)
+{
+  /* USER CODE BEGIN 6 */
+  /* User can add his own implementation to report the file name and line number,
+     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+  /* USER CODE END 6 */
+}
+#endif /* USE_FULL_ASSERT */

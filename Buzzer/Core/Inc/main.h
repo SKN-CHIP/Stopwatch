@@ -41,6 +41,7 @@ extern "C" {
 #include "stm32l4xx_ll_pwr.h"
 #include "stm32l4xx_ll_dma.h"
 #include "stm32l4xx_ll_tim.h"
+#include "stm32l4xx_ll_usart.h"
 #include "stm32l4xx_ll_gpio.h"
 
 #if defined(USE_FULL_ASSERT)
@@ -49,7 +50,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "stm32l4xx_ll_usart.h"
+//#include "stm32l4xx_ll_usart.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -77,8 +78,6 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define test_Pin LL_GPIO_PIN_5
 #define test_GPIO_Port GPIOA
-#define Led_Pin LL_GPIO_PIN_7
-#define Led_GPIO_Port GPIOC
 #define Buzz_Buzz_Pin LL_GPIO_PIN_9
 #define Buzz_Buzz_GPIO_Port GPIOA
 #define Led_Pin LL_GPIO_PIN_6

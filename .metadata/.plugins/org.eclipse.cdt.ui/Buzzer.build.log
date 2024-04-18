@@ -1,61 +1,10 @@
-16:16:58 **** Incremental Build of configuration Debug for project Buzzer ****
+17:48:30 **** Incremental Build of configuration Debug for project Buzzer ****
 make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DSTM32L476xx -DUSE_FULL_LL_DRIVER -DHSE_VALUE=8000000 -DHSE_STARTUP_TIMEOUT=100 -DLSE_STARTUP_TIMEOUT=5000 -DLSE_VALUE=32768 -DMSI_VALUE=4000000 -DEXTERNALSAI1_CLOCK_VALUE=2097000 -DEXTERNALSAI2_CLOCK_VALUE=2097000 -DHSI_VALUE=16000000 -DLSI_VALUE=32000 -DVDD_VALUE=3300 -DPREFETCH_ENABLE=0 -DINSTRUCTION_CACHE_ENABLE=1 -DDATA_CACHE_ENABLE=1 -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-In file included from ../Core/Src/main.c:20:
-../Core/Inc/main.h:84: warning: "Led_Pin" redefined
-   84 | #define Led_Pin LL_GPIO_PIN_6
-      | 
-../Core/Inc/main.h:80: note: this is the location of the previous definition
-   80 | #define Led_Pin LL_GPIO_PIN_7
-      | 
-../Core/Inc/main.h:85: warning: "Led_GPIO_Port" redefined
-   85 | #define Led_GPIO_Port GPIOB
-      | 
-../Core/Inc/main.h:81: note: this is the location of the previous definition
-   81 | #define Led_GPIO_Port GPIOC
-      | 
-../Core/Src/main.c: In function 'main':
-../Core/Src/main.c:128:11: warning: implicit declaration of function 'TM1637_gpio_init'; did you mean 'TM1637_Init'? [-Wimplicit-function-declaration]
-  128 |           TM1637_gpio_init();
-      |           ^~~~~~~~~~~~~~~~
-      |           TM1637_Init
-../Core/Src/main.c:142:27: warning: passing argument 3 of 'Buzz_Buzz' makes pointer from integer without a cast [-Wint-conversion]
-  142 |         Buzz_Buzz(500, 2, Buzz, Buzz_Check);
-      |                           ^~~~
-      |                           |
-      |                           int
-../Core/Src/main.c:69:40: note: expected 'int *' but argument is of type 'int'
-   69 | void Buzz_Buzz(int czas, int ile, int* Buzz, int* Buzz_Check);
-      |                                   ~~~~~^~~~
-../Core/Src/main.c: In function 'MX_TIM7_Init':
-../Core/Src/main.c:315:30: warning: conversion from 'long unsigned int' to 'uint16_t' {aka 'short unsigned int'} changes value from '4293950720' to '32000' [-Woverflow]
-  315 |   TIM_InitStruct.Prescaler = 32000-LL_TIM_IC_FILTER_FDIV1_N2;
-      |                              ^~~~~
-../Core/Src/main.c: In function 'WS2812_Send':
-../Core/Src/main.c:426:25: warning: passing argument 1 of 'generate_signal' from incompatible pointer type [-Wincompatible-pointer-types]
-  426 |         generate_signal(pwmData,sizeof(pwmData));
-      |                         ^~~~~~~
-      |                         |
-      |                         uint16_t * {aka short unsigned int *}
-In file included from ../Core/Src/main.c:24:
-../Core/Inc/led_pwm.h:15:31: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
-   15 | void generate_signal(uint8_t* data, uint32_t data_length);
-      |                      ~~~~~~~~~^~~~
-../Core/Src/main.c: In function 'Buzz_Buzz':
-../Core/Src/main.c:575:39: warning: comparison between pointer and integer
-  575 |         if((&Buzz > 0) & (&Buzz_Check == 1) & (LL_TIM_IsActiveFlag_UPDATE(TIM6) == 1)){
-      |                                       ^~
-arm-none-eabi-gcc -o "Buzzer.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\ciast\OneDrive\Dokumenty\GitHub\Stopwatch\Buzzer\STM32L476RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Buzzer.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: Buzzer.elf
- 
 arm-none-eabi-size  Buzzer.elf 
-arm-none-eabi-objdump -h -S Buzzer.elf  > "Buzzer.list"
    text	   data	    bss	    dec	    hex	filename
-  23376	    104	   2616	  26096	   65f0	Buzzer.elf
+  26200	    104	   2616	  28920	   70f8	Buzzer.elf
 Finished building: default.size.stdout
  
-Finished building: Buzzer.list
- 
 
-16:16:59 Build Finished. 0 errors, 7 warnings. (took 1s.627ms)
+17:48:30 Build Finished. 0 errors, 0 warnings. (took 325ms)
 
