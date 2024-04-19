@@ -117,7 +117,6 @@ int main(void)
   MX_TIM3_Init();
   MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
-  	  time = START_TIME;
   	  dma_init();
   	  enable_timer3();
   	  TM1637_gpio_init();
@@ -138,6 +137,7 @@ int main(void)
   	Buzz_Buzz(500, 2, Buzz, Buzz_Check);
   	if(data.flag == 0)
   	{
+  		TM1637_IdleMode(1);
   		AutomaticLedMode(&ledData);
   	}
 
@@ -444,6 +444,7 @@ void TIM7_IRQHandler(void)
 	{
 		LL_GPIO_TogglePin(test_GPIO_Port, test_Pin);
 		LL_TIM_ClearFlag_UPDATE(TIM7);
+		if(data.flag == 0) return;
 		if(time>= DISPLAY_BLINK_TIME*-2)
 		{
 			UpdateDisplay();
