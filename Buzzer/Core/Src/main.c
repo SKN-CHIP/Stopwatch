@@ -26,6 +26,7 @@
 #include "math.h"
 #include "communication.h"
 #include "led_set.h"
+#include <stdlib.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -40,6 +41,7 @@ struct bluetooth_data data;
 	#define USE_BRIGHTNESS 1
 	#define START_TIME 15
 	#define DISPLAY_BLINK_TIME 3
+	#define LED_BLINK_TIME 50
 
 /* USER CODE END PD */
 
@@ -86,6 +88,7 @@ int main(void)
   /* USER CODE BEGIN 1 */
   int* Buzz_Check = 0, Buzz = 0;
   struct led_data ledData;
+  time = START_TIME;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -135,10 +138,13 @@ int main(void)
     /* USER CODE BEGIN 3 */
   	Buzz_Buzz_Up(Buzz_Check);
   	Buzz_Buzz(500, 2, Buzz, Buzz_Check);
-  	if(data.flag == 0)
+  	if(data.flag == 0) // nic nie wyslala apka
   	{
-  		TM1637_IdleMode(1);
   		AutomaticLedMode(&ledData);
+  	}
+  	else
+  	{
+
   	}
 
   }
@@ -274,7 +280,7 @@ static void MX_TIM6_Init(void)
   /* USER CODE BEGIN TIM6_Init 1 */
 
   /* USER CODE END TIM6_Init 1 */
-  TIM_InitStruct.Prescaler = 31;
+  TIM_InitStruct.Prescaler = 31999;
   TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
   TIM_InitStruct.Autoreload = 65535;
   LL_TIM_Init(TIM6, &TIM_InitStruct);
@@ -419,7 +425,7 @@ void LedTest(int mode,struct led_data* data)
 					break;
 				}
 				WS2812_Send(data,STANDARD_BRIGHTNESS);
-				Damian_Marudzi(50000000);
+				Damian_Marudzi(LED_BLINK_TIME);
 			}
 		break;
 	}
@@ -427,16 +433,46 @@ void LedTest(int mode,struct led_data* data)
 void AutomaticLedMode(struct led_data* data)
 {
 	Reset_LED(data);
-	for(int i=0; i< MAX_LED; i++)
+	if(time >= 1)
 	{
-		if(i!=0)
-		{
-			Set_LED(data,i-1, 0, 0, 0);
-		}
-		Set_LED(data,i, 0, 0, 255);
-		WS2812_Send(data,STANDARD_BRIGHTNESS);
-		Damian_Marudzi(50000000);
+		if(time>10)
+			{
+				Damian_Marudzi(LED_BLINK_TIME*time*2);
+			}
+			else
+			{
+				Damian_Marudzi(25*time);
+			}
+			for(int i=0; i< MAX_LED; i++)
+				{
+					if(i!=0)
+					{
+						Set_LED(data,i-1, 0, 0, 0);
+					}
+					switch(i%3)
+					{
+						case 0:
+							Set_LED(data,i, 255, 0, 0);
+							break;
+						case 1:
+							Set_LED(data,i, 0, 255, 0);
+							break;
+						case 2:
+							Set_LED(data,i, 0, 0, 255);
+							break;
+					}
+					WS2812_Send(data,STANDARD_BRIGHTNESS);
+					Damian_Marudzi(LED_BLINK_TIME);
+				}
 	}
+	else if(time>=0)
+	{
+		for(int i=0; i< MAX_LED; i++)
+		{
+			Set_LED(data,i, 255, 0, 0);
+		}
+	}
+
 }
 void TIM7_IRQHandler(void)
 {
@@ -444,7 +480,6 @@ void TIM7_IRQHandler(void)
 	{
 		LL_GPIO_TogglePin(test_GPIO_Port, test_Pin);
 		LL_TIM_ClearFlag_UPDATE(TIM7);
-		if(data.flag == 0) return;
 		if(time>= DISPLAY_BLINK_TIME*-2)
 		{
 			UpdateDisplay();
@@ -452,7 +487,7 @@ void TIM7_IRQHandler(void)
 		}
 		else
 		{
-			TM1637_SetBrightness(0);
+	  		TM1637_IdleMode(1);
 		}
 
 	}
