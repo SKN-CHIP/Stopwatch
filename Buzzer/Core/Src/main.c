@@ -72,6 +72,7 @@ void LedTest(int mode,struct led_data* data);
 void UpdateDisplay();
 void LedStart(void);
 void AutomaticLedMode(struct led_data* data);
+void HandleLed(struct led_data* data);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -136,8 +137,6 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  	Buzz_Buzz_Up(Buzz_Check);
-  	Buzz_Buzz(500, 2, Buzz, Buzz_Check);
   	if(data.flag == 0) // nic nie wyslala apka
   	{
   		AutomaticLedMode(&ledData);
@@ -146,7 +145,7 @@ int main(void)
   	{
 
   	}
-
+  	HandleLed(&ledData);
   }
   /* USER CODE END 3 */
 }
@@ -432,9 +431,30 @@ void LedTest(int mode,struct led_data* data)
 }
 void AutomaticLedMode(struct led_data* data)
 {
-	Reset_LED(data);
-	if(time >= 1)
+	for(int i=0; i< MAX_LED; i++)
 	{
+		switch(i%3)
+		{
+			case 0:
+				Set_LED(data,i, 255, 0, 0);
+			break;
+			case 1:
+				Set_LED(data,i, 0, 255, 0);
+			break;
+			case 2:
+			Set_LED(data,i, 0, 0, 255);
+			break;
+		}
+	}
+
+}
+
+void HandleLed(struct led_data* data)
+{
+	if(time > 0)
+	{
+		struct led_data tempData = *data;
+		Reset_LED(&tempData);
 		if(time>10)
 			{
 				Damian_Marudzi(LED_BLINK_TIME*time*2);
@@ -447,30 +467,24 @@ void AutomaticLedMode(struct led_data* data)
 				{
 					if(i!=0)
 					{
-						Set_LED(data,i-1, 0, 0, 0);
+						Set_LED(&tempData,i-1, 0, 0, 0);
 					}
-					switch(i%3)
+					for(int j=0; j<4;j++)
 					{
-						case 0:
-							Set_LED(data,i, 255, 0, 0);
-							break;
-						case 1:
-							Set_LED(data,i, 0, 255, 0);
-							break;
-						case 2:
-							Set_LED(data,i, 0, 0, 255);
-							break;
+						tempData.LED_Data[i*4+j] = data->LED_Data[i*4+j];
 					}
-					WS2812_Send(data,STANDARD_BRIGHTNESS);
+					WS2812_Send(&tempData,STANDARD_BRIGHTNESS);
 					Damian_Marudzi(LED_BLINK_TIME);
 				}
 	}
-	else if(time>=0)
+	else if(time>= DISPLAY_BLINK_TIME*-2)
 	{
-		for(int i=0; i< MAX_LED; i++)
-		{
-			Set_LED(data,i, 255, 0, 0);
-		}
+		WS2812_Send(data,STANDARD_BRIGHTNESS);
+	}
+	else
+	{
+		Reset_LED(data);
+		WS2812_Send(data,STANDARD_BRIGHTNESS);
 	}
 
 }
