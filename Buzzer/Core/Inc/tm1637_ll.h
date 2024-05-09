@@ -22,4 +22,5 @@ void TM1637_ClkLow(void);
 void TM1637_DataHigh(void);
 void TM1637_DATALow(void);
 void dziala(void);
+void TM1637_IdleMode(int displaySeparator);
 #endif /* TM1637_H_ */

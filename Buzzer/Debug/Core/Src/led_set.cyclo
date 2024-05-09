@@ -1,0 +1,4 @@
+../Core/Src/led_set.c:5:6:WS2812_Send	6
+../Core/Src/led_set.c:34:6:Set_Brightness	4
+../Core/Src/led_set.c:49:6:Set_LED	1
+../Core/Src/led_set.c:57:6:Reset_LED	2
