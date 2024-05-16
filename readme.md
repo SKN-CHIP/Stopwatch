@@ -1,1 +1,1 @@
-#SKN CHIP Timer project
+SKN CHIP Timer project

@@ -39,7 +39,7 @@ struct bluetooth_data data;
 	#define MAX_LED 8
 	#define PI 3.14159265
 	#define USE_BRIGHTNESS 1
-	#define START_TIME -10
+	#define START_TIME 15
 	#define DISPLAY_BLINK_TIME 3
 	#define LED_BLINK_TIME 50
 
@@ -137,7 +137,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  	if(1) // nic nie wyslala apka
+  	if(data.flag == 0) // nic nie wyslala apka
   	{
   		AutomaticLedMode(&ledData);
   	}
@@ -379,10 +379,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HandleTime()
-{
-	time = data.value1*60+data.value2;
-}
+
 void Damian_Marudzi(uint32_t czas)
 {
 	LL_TIM_GenerateEvent_UPDATE(TIM6);
@@ -529,19 +526,19 @@ void UpdateDisplay()
 	TM1637_DisplayDecimal(displayData,1);
 }
 
-void Buzz_Buzz(uint16_t czas, uint8_t ile, uint8_t* Buzz, uint8_t* Buzz_Check)
+void Buzz_Buzz(int czas, int ile, int* Buzz, int* Buzz_Check)
 {
-	if((*Buzz == 0) && (*Buzz_Check == 1)){
+	if((*Buzz == 0) & (*Buzz_Check == 1)){
 		*Buzz = ile*2;
 		LL_TIM_SetAutoReload(TIM6, czas/2 - 1);
 	}
-	if((*Buzz > 0) && (*Buzz_Check == 1) && (LL_TIM_IsActiveFlag_UPDATE(TIM6) == 1)){
+	if((&Buzz > 0) & (&Buzz_Check == 1) & (LL_TIM_IsActiveFlag_UPDATE(TIM6) == 1)){
 			LL_TIM_GenerateEvent_UPDATE(TIM6);
 			LL_TIM_ClearFlag_UPDATE(TIM6);
 			LL_GPIO_TogglePin(Buzz_Buzz_GPIO_Port, Buzz_Buzz_Pin);
-			*Buzz = *Buzz - 1;
+			Buzz = Buzz - 1;
 			if(*Buzz == 0){
-				*Buzz_Check = 0;
+				Buzz_Check = 0;
 			}
 	}
 }
