@@ -545,7 +545,8 @@ void Buzz_Buzz(uint16_t czas, uint8_t ile, uint8_t* Buzz, uint8_t* Buzz_Check)
 			}
 	}
 }
-void Buzz_Buzz_Up(int* Buzz_Check){
+void Buzz_Buzz_Up(int* Buzz_Check)
+{
 	*Buzz_Check = 1;
 }
 /* USER CODE END 4 */
