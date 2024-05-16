@@ -39,7 +39,7 @@ struct bluetooth_data data;
 	#define MAX_LED 8
 	#define PI 3.14159265
 	#define USE_BRIGHTNESS 1
-	#define START_TIME 15
+	#define START_TIME -10
 	#define DISPLAY_BLINK_TIME 3
 	#define LED_BLINK_TIME 50
 
@@ -137,7 +137,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  	if(data.flag == 0) // nic nie wyslala apka
+  	if(1) // nic nie wyslala apka
   	{
   		AutomaticLedMode(&ledData);
   	}
@@ -379,7 +379,10 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void HandleTime()
+{
+	time = data.value1*60+data.value2;
+}
 void Damian_Marudzi(uint32_t czas)
 {
 	LL_TIM_GenerateEvent_UPDATE(TIM6);

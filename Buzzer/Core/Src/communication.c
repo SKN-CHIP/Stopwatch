@@ -24,6 +24,7 @@ int _write(int file, uint8_t *buf, int nbytes){
 
 void decompose_data(uint8_t message[], uint8_t length){
 	extern struct bluetooth_data data;
+	extern int time;
 	data.check_sum = (message[length - 1] - ASCII_OFFSET) * 10; //48 = ASCII offset
 	data.check_sum += message[length] - ASCII_OFFSET;
 	uint8_t sum = 0;
@@ -34,10 +35,10 @@ void decompose_data(uint8_t message[], uint8_t length){
 		return;
 	}
 	data.device_address = message[0] - ASCII_OFFSET;
-
 	if(data.device_address == 1){
 		data.value1 = (message[1] - ASCII_OFFSET) * 10 + message[2] - ASCII_OFFSET;
 		data.value2 = (message[3] - ASCII_OFFSET) * 10 + message[4] - ASCII_OFFSET;
+		HandleTime();
 	}
 	else if(data.device_address == 2){
 		data.value1 = message[1] - ASCII_OFFSET;
