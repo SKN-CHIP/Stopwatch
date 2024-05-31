@@ -69,7 +69,7 @@ extern "C" {
 
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
-void HandleTime();
+void HandleTime(int val);
 /* USER CODE BEGIN EFP */
 
 /* USER CODE END EFP */

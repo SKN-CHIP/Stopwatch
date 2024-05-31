@@ -8,9 +8,16 @@
 #include "stdio.h"
 #include "string.h"
 #include "communication.h"
+#include "led_set.h"
 
 #define LINE_MAX_LENGTH 50
 #define ASCII_OFFSET 48
+
+struct led_data *ledData;
+
+void SavePointer(struct led_data *newLedData) {
+    ledData = newLedData;
+}
 
 int _write(int file, uint8_t *buf, int nbytes){
   uint8_t num_of_byte = 0;
@@ -38,11 +45,13 @@ void decompose_data(uint8_t message[], uint8_t length){
 	if(data.device_address == 1){
 		data.value1 = (message[1] - ASCII_OFFSET) * 10 + message[2] - ASCII_OFFSET;
 		data.value2 = (message[3] - ASCII_OFFSET) * 10 + message[4] - ASCII_OFFSET;
-		HandleTime();
+		HandleTime(data.value1*60+data.value2);
 	}
 	else if(data.device_address == 2){
 		data.value1 = message[1] - ASCII_OFFSET;
 		data.value2 = message[2] - ASCII_OFFSET;
+
+
 	}
 	else if(data.device_address == 3){
 		data.value1 = message[1] - ASCII_OFFSET;

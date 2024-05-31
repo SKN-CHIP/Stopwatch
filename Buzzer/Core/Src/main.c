@@ -65,7 +65,7 @@ static void MX_TIM6_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_TIM7_Init(void);
 /* USER CODE BEGIN PFP */
-void Buzz_Buzz(int czas, int ile, int* Buzz, int* Buzz_Check);
+void Buzz_Buzz(uint16_t czas, uint8_t ile, uint8_t* Buzz, uint8_t* Buzz_Check);
 void Buzz_Buzz_Up(int* Buzz_Check);
 void Damian_Marudzi(uint32_t czas);
 void LedTest(int mode,struct led_data* data);
@@ -87,8 +87,9 @@ void HandleLed(struct led_data* data);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  int* Buzz_Check = 0, Buzz = 0;
+  //int* Buzz_Check = 0, Buzz = 0;
   struct led_data ledData;
+  SavePointer(&ledData);
   time = START_TIME;
   /* USER CODE END 1 */
 
@@ -379,9 +380,9 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HandleTime()
+void HandleTime(int val)
 {
-	time = data.value1*60+data.value2;
+	time = val;
 }
 void Damian_Marudzi(uint32_t czas)
 {
@@ -513,7 +514,12 @@ void TIM7_IRQHandler(void)
 void UpdateDisplay()
 {
 	uint32_t displayData = 0;
-	if(time<0 && time>= DISPLAY_BLINK_TIME*-2)
+	if(time>=0)
+	{
+		displayData = floor(time/60)*100+time%60;
+		TM1637_DisplayDecimal(displayData,1);
+	}
+	else if(time>= DISPLAY_BLINK_TIME*-2)
 	{
 		if(time%2!=0)
 		{
@@ -525,8 +531,7 @@ void UpdateDisplay()
 		}
 	  	return;
 	}
-	displayData = floor(time/60)*100+time%60;
-	TM1637_DisplayDecimal(displayData,1);
+
 }
 
 void Buzz_Buzz(uint16_t czas, uint8_t ile, uint8_t* Buzz, uint8_t* Buzz_Check)

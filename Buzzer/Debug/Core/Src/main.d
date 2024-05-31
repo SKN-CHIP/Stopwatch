@@ -20,7 +20,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_gpio.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_usart.h \
  ../Core/Inc/led_pwm.h ../Core/Inc/main.h ../Core/Inc/tm1637_ll.h \
- ../Core/Inc/communication.h ../Core/Inc/led_set.h ../Core/Inc/led_pwm.h
+ ../Core/Inc/communication.h ../Core/Inc/led_set.h ../Core/Inc/led_pwm.h \
+ ../Core/Inc/led_set.h
 ../Core/Inc/main.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_crs.h:
 ../Drivers/CMSIS/Device/ST/STM32L4xx/Include/stm32l4xx.h:
@@ -48,3 +49,4 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Core/Inc/communication.h:
 ../Core/Inc/led_set.h:
 ../Core/Inc/led_pwm.h:
+../Core/Inc/led_set.h:
