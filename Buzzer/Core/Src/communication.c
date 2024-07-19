@@ -13,11 +13,6 @@
 #define LINE_MAX_LENGTH 50
 #define ASCII_OFFSET 48
 
-struct led_data *ledData;
-
-void SavePointer(struct led_data *newLedData) {
-    ledData = newLedData;
-}
 
 int _write(int file, uint8_t *buf, int nbytes){
   uint8_t num_of_byte = 0;
@@ -50,12 +45,14 @@ void decompose_data(uint8_t message[], uint8_t length){
 	else if(data.device_address == 2){
 		data.value1 = message[1] - ASCII_OFFSET;
 		data.value2 = message[2] - ASCII_OFFSET;
-
+		SetAplicationLED(data.value1,data.value2);
+		//SetAplicationLED(2,0);
 
 	}
 	else if(data.device_address == 3){
 		data.value1 = message[1] - ASCII_OFFSET;
 		data.value2 = message[2] - ASCII_OFFSET;
+		SetAutoMode(data.value1);
 	}
 	else {
 		return;

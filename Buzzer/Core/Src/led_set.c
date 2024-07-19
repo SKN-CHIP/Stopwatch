@@ -31,6 +31,29 @@ for (int i=0; i<50; i++){
 	generate_signal((uint8_t*)led->pwmData, sizeof(led->pwmData));
 }
 
+void DisableLED (void){
+	uint32_t indx=0;
+	uint16_t pwmEmptyData[PWM_DATA_LENGTH];
+
+	for (int i=0; i<50; i++){
+		pwmEmptyData[indx] = 0;
+		indx++;
+	}
+
+	for (int i= 0; i<MAX_LED; i++){
+		for (int i=23; i>=0; i--){
+			pwmEmptyData[indx] = 13;  // 1/3 of 90
+			indx++;
+		}
+	}
+for (int i=0; i<50; i++){
+	pwmEmptyData[indx] = 0;
+		indx++;
+	}
+
+	generate_signal((uint8_t*)pwmEmptyData, sizeof(pwmEmptyData));
+}
+
 void Set_Brightness(struct led_data *led, uint8_t brightness){  // 0 - 45
 	if (brightness > 45)
 		brightness = 45;

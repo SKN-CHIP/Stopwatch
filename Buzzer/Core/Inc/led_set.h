@@ -20,11 +20,13 @@ struct led_data{
 	uint8_t LED_Data[MAX_LED*4];
 	uint8_t LED_Mod[MAX_LED*4];
 	uint16_t pwmData[PWM_DATA_LENGTH];
+	uint8_t autoMode;
 };
 
 void WS2812_Send (struct led_data *led, uint8_t brightness);
 void Set_Brightness(struct led_data *led, uint8_t brightness);
 void Set_LED (struct led_data *led, int LEDnum, int Red, int Green, int Blue);
 void Reset_LED (struct led_data *led);
+void DisableLED (void);
 
 #endif /* INC_LED_SET_H_ */

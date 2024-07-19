@@ -32,6 +32,7 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 struct bluetooth_data data;
+struct led_data ledData;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -88,8 +89,6 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
   //int* Buzz_Check = 0, Buzz = 0;
-  struct led_data ledData;
-  SavePointer(&ledData);
   time = START_TIME;
   /* USER CODE END 1 */
 
@@ -128,6 +127,7 @@ int main(void)
   	  TM1637_Init();
   	  TM1637_SetBrightness(8);
   	  usart1_init();
+  	  Reset_LED(&ledData);
   	  //LedTest(1, &ledData);
   /* USER CODE END 2 */
 
@@ -138,14 +138,6 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  	if(1) // nic nie wyslala apka
-  	{
-  		AutomaticLedMode(&ledData);
-  	}
-  	else
-  	{
-
-  	}
   	HandleLed(&ledData);
   }
   /* USER CODE END 3 */
@@ -487,9 +479,9 @@ void HandleLed(struct led_data* data)
 	}
 	else
 	{
-		Reset_LED(data);
-		WS2812_Send(data,STANDARD_BRIGHTNESS);
+		DisableLED();
 	}
+
 
 }
 void TIM7_IRQHandler(void)
@@ -553,6 +545,45 @@ void Buzz_Buzz(uint16_t czas, uint8_t ile, uint8_t* Buzz, uint8_t* Buzz_Check)
 void Buzz_Buzz_Up(int* Buzz_Check)
 {
 	*Buzz_Check = 1;
+}
+void SetAutoMode(uint8_t mode)
+{
+	ledData.autoMode = mode;
+  	if(ledData.autoMode == 1) // nic nie wyslala apka
+  	{
+  		AutomaticLedMode(&ledData);
+  	}
+}
+void SetAplicationLED(uint8_t LEDnum,uint8_t color)
+{
+
+	switch(color)
+	{
+		case 0:
+			Set_LED(&ledData,LEDnum, 0, 0, 0);
+		break;
+		case 1:
+			Set_LED(&ledData,LEDnum, 255, 0, 0);
+		break;
+		case 2:
+			Set_LED(&ledData,LEDnum, 0, 0, 255);
+		break;
+		case 3:
+			Set_LED(&ledData,LEDnum, 255, 255, 255);
+		break;
+		case 4:
+			Set_LED(&ledData,LEDnum, 255, 165, 0);
+		break;
+		case 5:
+			Set_LED(&ledData,LEDnum, 255, 192, 203);
+		break;
+		case 6:
+			Set_LED(&ledData,LEDnum, 0, 255, 0);
+		break;
+		default:
+			Set_LED(&ledData,LEDnum,255,255,255);
+		break;
+	}
 }
 /* USER CODE END 4 */
 

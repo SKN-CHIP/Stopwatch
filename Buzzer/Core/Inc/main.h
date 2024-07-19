@@ -71,7 +71,8 @@ extern "C" {
 void Error_Handler(void);
 void HandleTime(int val);
 /* USER CODE BEGIN EFP */
-
+void SetAplicationLED(uint8_t LEDnum,uint8_t color);
+void SetAutoMode(uint8_t mode);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
