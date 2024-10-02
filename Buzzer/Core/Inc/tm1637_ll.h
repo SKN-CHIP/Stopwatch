@@ -23,4 +23,5 @@ void TM1637_DataHigh(void);
 void TM1637_DATALow(void);
 void dziala(void);
 void TM1637_IdleMode(int displaySeparator);
+void TM1637_gpio_init();
 #endif /* TM1637_H_ */

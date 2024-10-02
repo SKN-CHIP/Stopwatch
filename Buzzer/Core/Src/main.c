@@ -62,18 +62,11 @@ int32_t time;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_TIM6_Init(void);
 static void MX_TIM3_Init(void);
-static void MX_TIM7_Init(void);
 /* USER CODE BEGIN PFP */
-void Buzz_Buzz(uint16_t czas, uint8_t ile, uint8_t* Buzz, uint8_t* Buzz_Check);
-void Buzz_Buzz_Up(int* Buzz_Check);
 void Damian_Marudzi(uint32_t czas);
 void LedTest(int mode,struct led_data* data);
-void UpdateDisplay();
-void LedStart(void);
-void AutomaticLedMode(struct led_data* data);
-void HandleLed(struct led_data* data);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -111,15 +104,13 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
-  /* USER CO_DE BEGIN SysInit */
+  /* USER CODE BEGIN SysInit */
 
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_TIM6_Init();
   MX_TIM3_Init();
-  MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
   	  dma_init();
   	  enable_timer3();
@@ -138,7 +129,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  	HandleLed(&ledData);
+
   }
   /* USER CODE END 3 */
 }
@@ -253,83 +244,6 @@ static void MX_TIM3_Init(void)
 }
 
 /**
-  * @brief TIM6 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TIM6_Init(void)
-{
-
-  /* USER CODE BEGIN TIM6_Init 0 */
-
-  /* USER CODE END TIM6_Init 0 */
-
-  LL_TIM_InitTypeDef TIM_InitStruct = {0};
-
-  /* Peripheral clock enable */
-  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM6);
-
-  /* USER CODE BEGIN TIM6_Init 1 */
-
-  /* USER CODE END TIM6_Init 1 */
-  TIM_InitStruct.Prescaler = 31999;
-  TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
-  TIM_InitStruct.Autoreload = 65535;
-  LL_TIM_Init(TIM6, &TIM_InitStruct);
-  LL_TIM_DisableARRPreload(TIM6);
-  LL_TIM_SetTriggerOutput(TIM6, LL_TIM_TRGO_RESET);
-  LL_TIM_DisableMasterSlaveMode(TIM6);
-  /* USER CODE BEGIN TIM6_Init 2 */
- // LL_TIM_SetClockSource(TIM6, LL_TIM_CLOCKSOURCE_INTERNAL);
-  LL_TIM_SetCounterMode(TIM6, LL_TIM_COUNTERMODE_UP);
-  LL_TIM_ClearFlag_UPDATE(TIM6);
-  LL_TIM_EnableCounter(TIM6);
-
-  /* USER CODE END TIM6_Init 2 */
-
-}
-
-/**
-  * @brief TIM7 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TIM7_Init(void)
-{
-
-  /* USER CODE BEGIN TIM7_Init 0 */
-
-  /* USER CODE END TIM7_Init 0 */
-
-  LL_TIM_InitTypeDef TIM_InitStruct = {0};
-
-  /* Peripheral clock enable */
-  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM7);
-
-  /* USER CODE BEGIN TIM7_Init 1 */
-
-  /* USER CODE END TIM7_Init 1 */
-  TIM_InitStruct.Prescaler = 32000-LL_TIM_IC_FILTER_FDIV1_N2;
-  TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
-  TIM_InitStruct.Autoreload = 1000-LL_TIM_IC_FILTER_FDIV1_N2;
-  LL_TIM_Init(TIM7, &TIM_InitStruct);
-  LL_TIM_DisableARRPreload(TIM7);
-  LL_TIM_SetTriggerOutput(TIM7, LL_TIM_TRGO_RESET);
-  LL_TIM_DisableMasterSlaveMode(TIM7);
-  /* USER CODE BEGIN TIM7_Init 2 */
-
-  LL_TIM_SetCounterMode(TIM7, LL_TIM_COUNTERMODE_UP);
-  LL_TIM_GenerateEvent_UPDATE(TIM7);
-  LL_TIM_ClearFlag_UPDATE(TIM7);
-  NVIC_SetPriority(TIM7_IRQn, 0);
-  NVIC_EnableIRQ(TIM7_IRQn);
-  LL_TIM_EnableIT_UPDATE(TIM7);
-  LL_TIM_EnableCounter(TIM7);
-  /* USER CODE END TIM7_Init 2 */
-
-}
-
-/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -346,18 +260,18 @@ static void MX_GPIO_Init(void)
   LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOB);
 
   /**/
-  LL_GPIO_ResetOutputPin(GPIOA, test_Pin|Buzz_Buzz_Pin);
+  LL_GPIO_ResetOutputPin(test_GPIO_Port, test_Pin);
 
   /**/
   LL_GPIO_ResetOutputPin(Led_GPIO_Port, Led_Pin);
 
   /**/
-  GPIO_InitStruct.Pin = test_Pin|Buzz_Buzz_Pin;
+  GPIO_InitStruct.Pin = test_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-  LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  LL_GPIO_Init(test_GPIO_Port, &GPIO_InitStruct);
 
   /**/
   GPIO_InitStruct.Pin = Led_Pin;
@@ -425,166 +339,17 @@ void LedTest(int mode,struct led_data* data)
 		break;
 	}
 }
-void AutomaticLedMode(struct led_data* data)
-{
-	for(int i=0; i< MAX_LED; i++)
-	{
-		switch(i%3)
-		{
-			case 0:
-				Set_LED(data,i, 255, 0, 0);
-			break;
-			case 1:
-				Set_LED(data,i, 0, 255, 0);
-			break;
-			case 2:
-			Set_LED(data,i, 0, 0, 255);
-			break;
-		}
-	}
 
-}
-
-void HandleLed(struct led_data* data)
-{
-	if(time > 0)
-	{
-		struct led_data tempData = *data;
-		Reset_LED(&tempData);
-		if(time>10)
-			{
-				Damian_Marudzi(LED_BLINK_TIME*time*2);
-			}
-			else
-			{
-				Damian_Marudzi(25*time);
-			}
-			for(int i=0; i< MAX_LED; i++)
-				{
-					if(i!=0)
-					{
-						Set_LED(&tempData,i-1, 0, 0, 0);
-					}
-					for(int j=0; j<4;j++)
-					{
-						tempData.LED_Data[i*4+j] = data->LED_Data[i*4+j];
-					}
-					WS2812_Send(&tempData,STANDARD_BRIGHTNESS);
-					Damian_Marudzi(LED_BLINK_TIME);
-				}
-	}
-	else if(time>= DISPLAY_BLINK_TIME*-2)
-	{
-		WS2812_Send(data,STANDARD_BRIGHTNESS);
-	}
-	else
-	{
-		DisableLED();
-	}
-
-
-}
 void TIM7_IRQHandler(void)
 {
 	if(LL_TIM_IsActiveFlag_UPDATE(TIM7) == 1)
 	{
 		LL_GPIO_TogglePin(test_GPIO_Port, test_Pin);
 		LL_TIM_ClearFlag_UPDATE(TIM7);
-		if(time>= DISPLAY_BLINK_TIME*-2)
-		{
-			UpdateDisplay();
-			time--;
-		}
-		else
-		{
-	  		TM1637_IdleMode(1);
-		}
 
 	}
 }
 
-void UpdateDisplay()
-{
-	uint32_t displayData = 0;
-	if(time>=0)
-	{
-		displayData = floor(time/60)*100+time%60;
-		TM1637_DisplayDecimal(displayData,1);
-	}
-	else if(time>= DISPLAY_BLINK_TIME*-2)
-	{
-		if(time%2!=0)
-		{
-			dziala();
-		}
-		else
-		{
-			TM1637_DisplayDecimal(displayData,1);
-		}
-	  	return;
-	}
-
-}
-
-void Buzz_Buzz(uint16_t czas, uint8_t ile, uint8_t* Buzz, uint8_t* Buzz_Check)
-{
-	if((*Buzz == 0) && (*Buzz_Check == 1)){
-		*Buzz = ile*2;
-		LL_TIM_SetAutoReload(TIM6, czas/2 - 1);
-	}
-	if((*Buzz > 0) && (*Buzz_Check == 1) && (LL_TIM_IsActiveFlag_UPDATE(TIM6) == 1)){
-			LL_TIM_GenerateEvent_UPDATE(TIM6);
-			LL_TIM_ClearFlag_UPDATE(TIM6);
-			LL_GPIO_TogglePin(Buzz_Buzz_GPIO_Port, Buzz_Buzz_Pin);
-			*Buzz = *Buzz - 1;
-			if(*Buzz == 0){
-				*Buzz_Check = 0;
-			}
-	}
-}
-void Buzz_Buzz_Up(int* Buzz_Check)
-{
-	*Buzz_Check = 1;
-}
-void SetAutoMode(uint8_t mode)
-{
-	ledData.autoMode = mode;
-  	if(ledData.autoMode == 1) // nic nie wyslala apka
-  	{
-  		AutomaticLedMode(&ledData);
-  	}
-}
-void SetAplicationLED(uint8_t LEDnum,uint8_t color)
-{
-
-	switch(color)
-	{
-		case 0:
-			Set_LED(&ledData,LEDnum, 0, 0, 0);
-		break;
-		case 1:
-			Set_LED(&ledData,LEDnum, 255, 0, 0);
-		break;
-		case 2:
-			Set_LED(&ledData,LEDnum, 0, 0, 255);
-		break;
-		case 3:
-			Set_LED(&ledData,LEDnum, 255, 255, 255);
-		break;
-		case 4:
-			Set_LED(&ledData,LEDnum, 255, 165, 0);
-		break;
-		case 5:
-			Set_LED(&ledData,LEDnum, 255, 192, 203);
-		break;
-		case 6:
-			Set_LED(&ledData,LEDnum, 0, 255, 0);
-		break;
-		default:
-			Set_LED(&ledData,LEDnum,255,255,255);
-		break;
-	}
-}
 /* USER CODE END 4 */
 
 /**

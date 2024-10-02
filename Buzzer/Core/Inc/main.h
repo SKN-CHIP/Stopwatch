@@ -69,7 +69,7 @@ extern "C" {
 
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
-void HandleTime(int val);
+
 /* USER CODE BEGIN EFP */
 void SetAplicationLED(uint8_t LEDnum,uint8_t color);
 void SetAutoMode(uint8_t mode);
@@ -78,10 +78,6 @@ void SetAutoMode(uint8_t mode);
 /* Private defines -----------------------------------------------------------*/
 #define test_Pin LL_GPIO_PIN_5
 #define test_GPIO_Port GPIOA
-#define Led_Pin LL_GPIO_PIN_7
-#define Led_GPIO_Port GPIOC
-#define Buzz_Buzz_Pin LL_GPIO_PIN_9
-#define Buzz_Buzz_GPIO_Port GPIOA
 #define Led_Pin LL_GPIO_PIN_6
 #define Led_GPIO_Port GPIOB
 #ifndef NVIC_PRIORITYGROUP_0
