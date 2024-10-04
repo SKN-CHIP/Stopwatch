@@ -63,6 +63,7 @@ int32_t time;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM3_Init(void);
+static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
 void Damian_Marudzi(uint32_t czas);
 void LedTest(int mode,struct led_data* data);
@@ -111,6 +112,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_TIM3_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   	  dma_init();
   	  enable_timer3();
@@ -181,6 +183,41 @@ void SystemClock_Config(void)
   LL_Init1msTick(32000000);
 
   LL_SetSystemCoreClock(32000000);
+}
+
+/**
+  * @brief TIM2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM2_Init(void)
+{
+
+  /* USER CODE BEGIN TIM2_Init 0 */
+
+  /* USER CODE END TIM2_Init 0 */
+
+  LL_TIM_InitTypeDef TIM_InitStruct = {0};
+
+  /* Peripheral clock enable */
+  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM2);
+
+  /* USER CODE BEGIN TIM2_Init 1 */
+
+  /* USER CODE END TIM2_Init 1 */
+  TIM_InitStruct.Prescaler = 32000-LL_TIM_IC_FILTER_FDIV1_N2;
+  TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
+  TIM_InitStruct.Autoreload = 1000-LL_TIM_IC_FILTER_FDIV1_N2;
+  TIM_InitStruct.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1;
+  LL_TIM_Init(TIM2, &TIM_InitStruct);
+  LL_TIM_DisableARRPreload(TIM2);
+  LL_TIM_SetClockSource(TIM2, LL_TIM_CLOCKSOURCE_INTERNAL);
+  LL_TIM_SetTriggerOutput(TIM2, LL_TIM_TRGO_RESET);
+  LL_TIM_DisableMasterSlaveMode(TIM2);
+  /* USER CODE BEGIN TIM2_Init 2 */
+
+  /* USER CODE END TIM2_Init 2 */
+
 }
 
 /**
@@ -286,17 +323,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HandleTime(int val)
-{
-	time = val;
-}
-void Damian_Marudzi(uint32_t czas)
-{
-	LL_TIM_GenerateEvent_UPDATE(TIM6);
-	LL_TIM_ClearFlag_UPDATE(TIM6);
-	LL_TIM_SetAutoReload(TIM6, czas);
-	while(LL_TIM_IsActiveFlag_UPDATE(TIM6) == 0);
-}
+
 void LedTest(int mode,struct led_data* data)
 {
 
@@ -347,6 +374,15 @@ void TIM7_IRQHandler(void)
 		LL_GPIO_TogglePin(test_GPIO_Port, test_Pin);
 		LL_TIM_ClearFlag_UPDATE(TIM7);
 
+	}
+}
+
+void Timer1secUpdate(void)
+{
+	if(LL_TIM_IsActiveFlag_UPDATE(TIM2) == 1)
+	{
+		LL_TIM_ClearFlag_UPDATE(TIM2);
+		LL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
 	}
 }
 
