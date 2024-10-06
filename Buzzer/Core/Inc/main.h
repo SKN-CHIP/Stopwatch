@@ -76,8 +76,8 @@ void SetAutoMode(uint8_t mode);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define test_Pin LL_GPIO_PIN_5
-#define test_GPIO_Port GPIOA
+#define LED_1Hz_PIN_Pin LL_GPIO_PIN_5
+#define LED_1Hz_PIN_GPIO_Port GPIOA
 #define Led_Pin LL_GPIO_PIN_6
 #define Led_GPIO_Port GPIOB
 #ifndef NVIC_PRIORITYGROUP_0

@@ -63,9 +63,8 @@ int32_t time;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM3_Init(void);
-static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
-void Damian_Marudzi(uint32_t czas);
+static void MX_TIM2_Init(void);
 void LedTest(int mode,struct led_data* data);
 
 /* USER CODE END PFP */
@@ -106,13 +105,12 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+  	  MX_TIM2_Init();
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_TIM3_Init();
-  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   	  dma_init();
   	  enable_timer3();
@@ -183,41 +181,6 @@ void SystemClock_Config(void)
   LL_Init1msTick(32000000);
 
   LL_SetSystemCoreClock(32000000);
-}
-
-/**
-  * @brief TIM2 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TIM2_Init(void)
-{
-
-  /* USER CODE BEGIN TIM2_Init 0 */
-
-  /* USER CODE END TIM2_Init 0 */
-
-  LL_TIM_InitTypeDef TIM_InitStruct = {0};
-
-  /* Peripheral clock enable */
-  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM2);
-
-  /* USER CODE BEGIN TIM2_Init 1 */
-
-  /* USER CODE END TIM2_Init 1 */
-  TIM_InitStruct.Prescaler = 32000-LL_TIM_IC_FILTER_FDIV1_N2;
-  TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
-  TIM_InitStruct.Autoreload = 1000-LL_TIM_IC_FILTER_FDIV1_N2;
-  TIM_InitStruct.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1;
-  LL_TIM_Init(TIM2, &TIM_InitStruct);
-  LL_TIM_DisableARRPreload(TIM2);
-  LL_TIM_SetClockSource(TIM2, LL_TIM_CLOCKSOURCE_INTERNAL);
-  LL_TIM_SetTriggerOutput(TIM2, LL_TIM_TRGO_RESET);
-  LL_TIM_DisableMasterSlaveMode(TIM2);
-  /* USER CODE BEGIN TIM2_Init 2 */
-
-  /* USER CODE END TIM2_Init 2 */
-
 }
 
 /**
@@ -297,18 +260,18 @@ static void MX_GPIO_Init(void)
   LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOB);
 
   /**/
-  LL_GPIO_ResetOutputPin(test_GPIO_Port, test_Pin);
+  LL_GPIO_ResetOutputPin(LED_1Hz_PIN_GPIO_Port, LED_1Hz_PIN_Pin);
 
   /**/
   LL_GPIO_ResetOutputPin(Led_GPIO_Port, Led_Pin);
 
   /**/
-  GPIO_InitStruct.Pin = test_Pin;
+  GPIO_InitStruct.Pin = LED_1Hz_PIN_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-  LL_GPIO_Init(test_GPIO_Port, &GPIO_InitStruct);
+  LL_GPIO_Init(LED_1Hz_PIN_GPIO_Port, &GPIO_InitStruct);
 
   /**/
   GPIO_InitStruct.Pin = Led_Pin;
@@ -323,6 +286,22 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+static void MX_TIM2_Init(void)
+{
+	LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM2);
+	LL_TIM_SetClockSource(TIM2, LL_TIM_CLOCKSOURCE_INTERNAL);
+	LL_TIM_SetCounterMode(TIM2, LL_TIM_COUNTERMODE_UP);
+	LL_TIM_SetPrescaler(TIM2, 32000-1);
+	LL_TIM_SetAutoReload(TIM2, 1000-1);
+
+  NVIC_SetPriority(TIM2_IRQn, 0);
+  NVIC_EnableIRQ(TIM2_IRQn);
+  LL_TIM_EnableIT_UPDATE(TIM2);
+  LL_TIM_EnableCounter(TIM2);
+
+  /* USER CODE END TIM2_Init 2 */
+}
 
 void LedTest(int mode,struct led_data* data)
 {
@@ -367,22 +346,13 @@ void LedTest(int mode,struct led_data* data)
 	}
 }
 
-void TIM7_IRQHandler(void)
-{
-	if(LL_TIM_IsActiveFlag_UPDATE(TIM7) == 1)
-	{
-		LL_GPIO_TogglePin(test_GPIO_Port, test_Pin);
-		LL_TIM_ClearFlag_UPDATE(TIM7);
 
-	}
-}
-
-void Timer1secUpdate(void)
+void TIM2_IRQHandler(void)
 {
 	if(LL_TIM_IsActiveFlag_UPDATE(TIM2) == 1)
 	{
 		LL_TIM_ClearFlag_UPDATE(TIM2);
-		LL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
+		LL_GPIO_TogglePin(LED_1Hz_PIN_GPIO_Port, LED_1Hz_PIN_Pin);
 	}
 }
 
