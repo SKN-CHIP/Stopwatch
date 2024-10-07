@@ -66,7 +66,7 @@ static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
 static void MX_TIM2_Init(void);
 void LedTest(int mode,struct led_data* data);
-
+void HandleTimer(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -82,7 +82,8 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
   //int* Buzz_Check = 0, Buzz = 0;
-  time = START_TIME;
+ // time = START_TIME;
+	time = 10;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -353,9 +354,32 @@ void TIM2_IRQHandler(void)
 	{
 		LL_TIM_ClearFlag_UPDATE(TIM2);
 		LL_GPIO_TogglePin(LED_1Hz_PIN_GPIO_Port, LED_1Hz_PIN_Pin);
+		HandleTimer();
 	}
 }
 
+
+void HandleTimer(void)
+{
+	if(time >= DISPLAY_BLINK_TIME*-2)
+	{
+		if(time >=0)
+			TM1637_DisplayDecimal(time%60,1);
+		else
+		{
+			if(time%2==0)
+				TM1637_DisplayDecimal(0,1);
+			else
+				TM1637_DisplayNothing(1);
+		}
+		time--;
+	}
+	else
+	{
+		TM1637_IdleMode(1);
+	}
+
+}
 /* USER CODE END 4 */
 
 /**

@@ -112,7 +112,32 @@ void TM1637_IdleMode( int displaySeparator)
 
     TM1637_Stop();
 }
+void TM1637_DisplayNothing( int displaySeparator)
+{
+    unsigned char digitArr[4];
+    for (int i = 0; i < 4; ++i) {
+        digitArr[i] = 0x0;
+        if (i == 2 && displaySeparator) {
+            digitArr[i] |= 1 << 7;
+        }
+    }
 
+    TM1637_Start();
+    TM1637_WriteByte(0x40);
+    TM1637_ReadResult();
+    TM1637_Stop();
+
+    TM1637_Start();
+    TM1637_WriteByte(0xc0);
+    TM1637_ReadResult();
+
+    for (int i = 0; i < 4; ++i) {
+        TM1637_WriteByte(digitArr[3 - i]);
+        TM1637_ReadResult();
+    }
+
+    TM1637_Stop();
+}
 void dziala()
 {
     unsigned char digitArr[4];
