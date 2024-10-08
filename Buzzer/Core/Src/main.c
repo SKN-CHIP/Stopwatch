@@ -56,6 +56,7 @@ struct led_data ledData;
 /* USER CODE BEGIN PV */
 
 int32_t time;
+__IO uint32_t Tick;
 
 /* USER CODE END PV */
 
@@ -65,8 +66,11 @@ static void MX_GPIO_Init(void);
 static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
 static void MX_TIM2_Init(void);
+static void MX_TIM6_Init(void);
 void LedTest(int mode,struct led_data* data);
 void HandleTimer(void);
+void SetTime(int32_t newTime);
+void Delay(uint32_t Delay_ms);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -83,7 +87,7 @@ int main(void)
   /* USER CODE BEGIN 1 */
   //int* Buzz_Check = 0, Buzz = 0;
  // time = START_TIME;
-	time = 10;
+	time = -20;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -112,6 +116,8 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_TIM3_Init();
+  MX_TIM6_Init();
+  SysTick_Config(32000);
   /* USER CODE BEGIN 2 */
   	  dma_init();
   	  enable_timer3();
@@ -120,7 +126,7 @@ int main(void)
   	  TM1637_SetBrightness(8);
   	  usart1_init();
   	  Reset_LED(&ledData);
-  	  //LedTest(1, &ledData);
+  	  LedTest(2, &ledData);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -304,6 +310,20 @@ static void MX_TIM2_Init(void)
   /* USER CODE END TIM2_Init 2 */
 }
 
+static void MX_TIM6_Init(void)
+{
+	LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM6);
+	LL_TIM_SetClockSource(TIM6, LL_TIM_CLOCKSOURCE_INTERNAL);
+	LL_TIM_SetCounterMode(TIM6, LL_TIM_COUNTERMODE_UP);
+	LL_TIM_SetPrescaler(TIM6, 32000-1);
+	LL_TIM_SetAutoReload(TIM6, 1000-1);
+
+  NVIC_SetPriority(TIM6_IRQn, 0);
+  NVIC_EnableIRQ(TIM6_IRQn);
+
+  /* USER CODE END TIM2_Init 2 */
+}
+
 void LedTest(int mode,struct led_data* data)
 {
 
@@ -341,7 +361,7 @@ void LedTest(int mode,struct led_data* data)
 					break;
 				}
 				WS2812_Send(data,STANDARD_BRIGHTNESS);
-				Damian_Marudzi(LED_BLINK_TIME);
+				Delay(LED_BLINK_TIME);
 			}
 		break;
 	}
@@ -359,12 +379,13 @@ void TIM2_IRQHandler(void)
 }
 
 
+
 void HandleTimer(void)
 {
 	if(time >= DISPLAY_BLINK_TIME*-2)
 	{
 		if(time >=0)
-			TM1637_DisplayDecimal(time%60,1);
+			TM1637_DisplayDecimal((time/60)*100+time%60,1);
 		else
 		{
 			if(time%2==0)
@@ -380,6 +401,26 @@ void HandleTimer(void)
 	}
 
 }
+
+void SetTime(int32_t newTime)
+{
+	time = newTime;
+}
+void Delay(uint32_t Delay_ms)
+{
+
+	    uint32_t StartTime = Tick;
+	    while(Tick < (StartTime + Delay_ms))
+	    {
+	        // Just wait
+	    }
+}
+
+void SysTick_Handler(void)
+{
+	    Tick++; // Increase system timer
+}
+
 /* USER CODE END 4 */
 
 /**
