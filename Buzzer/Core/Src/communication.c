@@ -44,11 +44,12 @@ void decompose_data(uint8_t message[], uint8_t length){
 	else if(data.device_address == 2){
 		data.value1 = message[1] - ASCII_OFFSET;
 		data.value2 = message[2] - ASCII_OFFSET;
-
+		SetAplicationLED(data.value1,data.value2);
 	}
 	else if(data.device_address == 3){
 		data.value1 = message[1] - ASCII_OFFSET;
 		data.value2 = message[2] - ASCII_OFFSET;
+		SetAutoMode(data.value1);
 	}
 	else {
 		return;

@@ -27,6 +27,7 @@
 #include "communication.h"
 #include "led_set.h"
 #include <stdlib.h>
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -56,6 +57,8 @@ struct led_data ledData;
 /* USER CODE BEGIN PV */
 
 int32_t time;
+uint8_t automode = 0;
+
 __IO uint32_t Tick;
 
 /* USER CODE END PV */
@@ -66,16 +69,13 @@ static void MX_GPIO_Init(void);
 static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
 static void MX_TIM2_Init(void);
-static void MX_TIM6_Init(void);
-void LedTest(int mode,struct led_data* data);
-void HandleTimer(void);
-void SetTime(int32_t newTime);
-void Delay(uint32_t Delay_ms);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+void LedTest(int mode,struct led_data* data);
+void PerformAutomaticMode(struct led_data* data);
+void PerformNormalMode(struct led_data* data);
 /* USER CODE END 0 */
 
 /**
@@ -111,13 +111,12 @@ int main(void)
 
   /* USER CODE BEGIN SysInit */
   	  MX_TIM2_Init();
+  	  SysTick_Config(32000);
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_TIM3_Init();
-  MX_TIM6_Init();
-  SysTick_Config(32000);
   /* USER CODE BEGIN 2 */
   	  dma_init();
   	  enable_timer3();
@@ -126,13 +125,25 @@ int main(void)
   	  TM1637_SetBrightness(8);
   	  usart1_init();
   	  Reset_LED(&ledData);
-  	  LedTest(2, &ledData);
+  	  //LedTest(2, &ledData);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  if(time>=0)
+	  {
+		  if(automode == 1)
+		  {
+			  PerformAutomaticMode(&ledData);
+		  }
+		  else
+		  {
+			  PerformNormalMode(&ledData);
+		  }
+	  }
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -310,19 +321,6 @@ static void MX_TIM2_Init(void)
   /* USER CODE END TIM2_Init 2 */
 }
 
-static void MX_TIM6_Init(void)
-{
-	LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM6);
-	LL_TIM_SetClockSource(TIM6, LL_TIM_CLOCKSOURCE_INTERNAL);
-	LL_TIM_SetCounterMode(TIM6, LL_TIM_COUNTERMODE_UP);
-	LL_TIM_SetPrescaler(TIM6, 32000-1);
-	LL_TIM_SetAutoReload(TIM6, 1000-1);
-
-  NVIC_SetPriority(TIM6_IRQn, 0);
-  NVIC_EnableIRQ(TIM6_IRQn);
-
-  /* USER CODE END TIM2_Init 2 */
-}
 
 void LedTest(int mode,struct led_data* data)
 {
@@ -421,6 +419,87 @@ void SysTick_Handler(void)
 	    Tick++; // Increase system timer
 }
 
+void SetAutoMode(uint8_t mode)
+{
+	automode = mode;
+}
+void PerformAutomaticMode(struct led_data* data)
+{
+	Reset_LED(data);
+		for(int i=0; i< MAX_LED; i++)
+		{
+			if(i!=0)
+			{
+				Set_LED(data,i-1, 0, 0, 0);
+			}
+			switch(i%3)
+			{
+				case 0:
+					Set_LED(data,i, 255, 0, 0);
+					break;
+				case 1:
+					Set_LED(data,i, 0, 255, 0);
+				break;
+				case 2:
+					Set_LED(data,i, 0, 0, 255);
+				break;
+			}
+			WS2812_Send(data,STANDARD_BRIGHTNESS);
+			Delay(LED_BLINK_TIME);
+		}
+}
+
+void PerformNormalMode(struct led_data* data)
+{
+	struct led_data temp;
+
+    memcpy(temp.LED_Data, data->LED_Data, MAX_LED*4 * sizeof(uint8_t));
+    memcpy(temp.LED_Mod, data->LED_Mod, MAX_LED*4 * sizeof(uint8_t));
+    temp.autoMode = data->autoMode;
+    memcpy(temp.pwmData, data->pwmData, MAX_LED*4 * sizeof(uint8_t));
+	Reset_LED(&temp);
+		for(int i=0; i< MAX_LED; i++)
+		{
+			if(i!=0)
+			{
+				Set_LED(&temp,i-1, 0, 0, 0);
+			}
+
+				Set_LED(&temp,i, data->LED_Data[i*4 + 2], data->LED_Data[i*4 + 1], data->LED_Data[i*4 + 3]);
+				WS2812_Send(&temp,STANDARD_BRIGHTNESS);
+				Delay(LED_BLINK_TIME);
+		}
+}
+void SetAplicationLED(uint8_t LEDnum,uint8_t color)
+{
+	LEDnum -= 1;
+	switch(color)
+	{
+	case 0:
+		Set_LED(&ledData,LEDnum, 0, 0, 0);
+		break;
+	case 1:
+		Set_LED(&ledData,LEDnum, 255, 255, 255);
+	break;
+	case 2:
+		Set_LED(&ledData,LEDnum, 255, 0, 0);
+	break;
+	case 3:
+		Set_LED(&ledData,LEDnum, 255, 215, 0);
+		break;
+	case 4:
+		Set_LED(&ledData,LEDnum, 0, 255, 0);
+	break;
+	case 5:
+		Set_LED(&ledData,LEDnum, 0, 0, 255);
+	break;
+	case 6:
+		Set_LED(&ledData,LEDnum, 128, 0, 128);
+	break;
+	}
+
+
+}
 /* USER CODE END 4 */
 
 /**

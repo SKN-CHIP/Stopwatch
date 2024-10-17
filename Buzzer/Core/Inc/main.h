@@ -72,6 +72,9 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
 void SetAplicationLED(uint8_t LEDnum,uint8_t color);
+void HandleTimer(void);
+void SetTime(int32_t newTime);
+void Delay(uint32_t Delay_ms);
 void SetAutoMode(uint8_t mode);
 /* USER CODE END EFP */
 
@@ -94,6 +97,7 @@ void SetAutoMode(uint8_t mode);
 #endif
 
 /* USER CODE BEGIN Private defines */
+
 
 /* USER CODE END Private defines */
 
